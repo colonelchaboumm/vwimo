@@ -1,12 +1,18 @@
 # Livraison 0.3 — 20 octobre 2026
 
 - Backend : 35 tests réussis, dont démarrage autonome, conservation des dossiers et sauvegarde avant migration.
-- Interface : les 10 parcours existants passent ; les scénarios de mise à jour vérifient la détection, le clic explicite avant installation, le refus simulé d’une signature, l’état hors ligne et l’état à jour.
+- PostgreSQL local : 34 tests réussis, 1 ignoré (sauvegarde SQLite). Un conflit de port provoqué confirme le code de sortie 1 ; un arrêt prématuré de la bibliothèque ne doit plus produire un faux succès.
+- Le lanceur PostgreSQL utilise désormais `pg_ctl` sous Windows et accorde au compte courant les droits sur sa seule base de test. Le démarrage direct échouait avec le compte administrateur GitHub ; le hook d'arrêt de la bibliothèque masquait cet échec. Les premières validations CI ne prouvaient donc pas l'exécution des tests PostgreSQL.
+- Interface : 15 parcours réussis ; les scénarios de mise à jour vérifient la détection, le clic explicite avant installation, le refus simulé d’une signature, l’état hors ligne, l’état à jour et l’absence du bouton dans le navigateur.
 - Windows autonome : démarrage du backend embarqué, connexion, création de contact, import/téléchargement PDF et déconnexion réussis dans WebView2. Une requête sans clé du processus parent est refusée.
 - Installateur NSIS 0.3.0 et signature Tauri générés. Backend et runtime Python inclus (~27 Mo compressés).
 - Publication : code source, workflow de vérification, workflow de release, manifeste latest.json et empreinte SHA-256. La clé privée est exclue de Git et enregistrée comme secret Actions avec autorisation explicite du propriétaire.
+- Les fichiers publiés utilisent un nom sans espaces, pour garder les liens du manifeste identiques aux noms conservés par GitHub.
+- Moteur de mise à jour natif : avant la première publication GitHub, l'absence de release affiche bien une erreur de vérification, sans état « à jour » ni bouton d'installation.
+- GitHub Actions : [vérification Windows réussie](https://github.com/colonelchaboumm/vwimo/actions/runs/39372038726) et [publication signée réussie](https://github.com/colonelchaboumm/vwimo/actions/runs/39372038385). Le test WebView2 fonctionne sur Windows Server 2022 ; le premier essai Server 2025 ne permettait pas la connexion au port de débogage.
+- Release publique 0.3.0 : un client natif de test 0.3.0-rc.1 détecte la version, affiche son icône et ses notes, télécharge les 28 231 023 octets depuis GitHub et valide la signature avec le moteur Tauri réel. Aucune commande d'installation n'est appelée durant ce contrôle. Le binaire de production 0.3.0, restauré ensuite, répond bien « à jour » sur le même endpoint public.
 
-Les tests d’interface des mises à jour utilisent un pont natif simulé ; ils ne valident pas à eux seuls le remplacement d’une ancienne installation. L’installation et une mise à niveau sur une machine vierge restent à vérifier. La distribution autonome est actuellement en mode démonstration SQLite. Les données du mode navigateur de développement sont distinctes ; voir MISES-A-JOUR.md.
+Les tests d’interface des mises à jour utilisent un pont natif simulé ; le contrôle supplémentaire ci-dessus vérifie le téléchargement et la signature réels. Le remplacement d’une ancienne installation et l’installation sur une machine vierge restent à vérifier. La distribution autonome est actuellement en mode démonstration SQLite. Les données du mode navigateur de développement sont distinctes ; voir MISES-A-JOUR.md.
 
 Le compte rendu ci-dessous décrit la version 0.2 antérieure, dont le backend était encore séparé.
 

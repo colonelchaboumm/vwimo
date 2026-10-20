@@ -33,8 +33,14 @@ const manifest = {
   },
 };
 await mkdir(".local/release", { recursive: true });
-await copyFile(path.join(directory, filename), `.local/release/${publishedFilename}`);
-await copyFile(path.join(directory, filename + ".sig"), `.local/release/${publishedFilename}.sig`);
+await copyFile(
+  path.join(directory, filename),
+  `.local/release/${publishedFilename}`,
+);
+await copyFile(
+  path.join(directory, filename + ".sig"),
+  `.local/release/${publishedFilename}.sig`,
+);
 await writeFile(
   ".local/release/latest.json",
   JSON.stringify(manifest, null, 2) + "\n",
@@ -42,5 +48,8 @@ await writeFile(
 const digest = createHash("sha256")
   .update(await readFile(path.join(directory, filename)))
   .digest("hex");
-await writeFile(".local/release/SHA256SUMS.txt", `${digest}  ${publishedFilename}\n`);
+await writeFile(
+  ".local/release/SHA256SUMS.txt",
+  `${digest}  ${publishedFilename}\n`,
+);
 console.log(`Manifeste signé préparé pour ${version}.`);
