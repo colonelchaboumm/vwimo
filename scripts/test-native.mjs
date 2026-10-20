@@ -1,0 +1,138 @@
+import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+import net from "node:net";
+import path from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
+import { chromium, expect } from "@playwright/test";
+
+const root = process.cwd();
+async function occupied(port) {
+  return new Promise((resolve) => {
+    const socket = net.connect(port, "127.0.0.1");
+    socket.once("connect", () => {
+      socket.destroy();
+      resolve(true);
+    });
+    socket.once("error", () => resolve(false));
+  });
+}
+assert(!(await occupied(9223)), "Le port 9223 doit être libre.");
+const runDir = path.join(root, ".local", `native-test-${Date.now()}`);
+let backend, native, browser;
+let logs = "";
+function launch(file, args, env) {
+  const child = spawn(file, args, {
+    cwd: root,
+    env: { ...process.env, ...env },
+    windowsHide: true,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  child.stdout.on("data", (chunk) => {
+    logs += chunk;
+  });
+  child.stderr.on("data", (chunk) => {
+    logs += chunk;
+  });
+  child.on("error", (error) => {
+    logs += error.message;
+  });
+  return child;
+}
+async function waitFor(url, child) {
+  for (let n = 0; n < 100; n++) {
+    if (child.exitCode !== null) throw new Error(`Processus arrêté : ${logs}`);
+    try {
+      const r = await fetch(url);
+      if (r.ok) return await r.json();
+    } catch {}
+    await delay(200);
+  }
+  throw new Error(`Service non disponible : ${url}\n${logs}`);
+}
+try {
+  native = launch(
+    path.join(root, "apps/desktop/src-tauri/target/release/immo-pilot-ai.exe"),
+    [],
+    {
+      WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: "--remote-debugging-port=9223",
+      WEBVIEW2_USER_DATA_FOLDER: path.join(root, ".local/native-webview-test"),
+      IMMO_DESKTOP_DATA_DIR: runDir,
+    },
+  );
+  const endpoint = await waitFor("http://127.0.0.1:9223/json/version", native);
+  browser = await chromium.connectOverCDP(endpoint.webSocketDebuggerUrl);
+  const context = browser.contexts()[0];
+  const page =
+    context.pages()[0] ||
+    (await context.waitForEvent("page", { timeout: 15000 }));
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await expect(
+    page.getByRole("button", { name: "Mises à jour de l’application" }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Ouvrir l’espace de démonstration" })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Bonjour, Camille." }),
+  ).toBeVisible();
+  const connection = await page.evaluate(() =>
+    window.__TAURI_INTERNALS__.invoke("backend_connection"),
+  );
+  assert.equal((await fetch(connection.origin + "/api/health")).status, 401);
+  assert.equal(
+    (
+      await fetch(connection.origin + "/api/health", {
+        headers: { "X-Immo-Desktop-Key": connection.key },
+      })
+    ).status,
+    200,
+  );
+  await page.getByRole("button", { name: "Vendeurs", exact: true }).click();
+  await page.getByRole("button", { name: "Nouveau contact" }).click();
+  await page.getByLabel("Nom complet").fill("Vendeur natif WebView2");
+  await page.getByRole("button", { name: "Enregistrer le contact" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(
+    page.getByText("Vendeur natif WebView2", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Documents", exact: true }).click();
+  await page.getByRole("button", { name: "Ajouter un document" }).click();
+  await page.getByLabel("Fichier").setInputFiles({
+    name: "native-test.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\nNative test\n%%EOF"),
+  });
+  await page.getByRole("button", { name: "Importer le document" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  const download = page.waitForEvent("download", { timeout: 15000 });
+  await page.getByRole("button", { name: "Télécharger" }).click();
+  const file = await download;
+  assert.equal(file.suggestedFilename(), "native-test.pdf");
+  assert.equal(await file.failure(), null);
+  await page
+    .getByRole("button", { name: "Tableau de bord", exact: true })
+    .click();
+  await mkdir("docs/screenshots", { recursive: true });
+  await page.screenshot({
+    path: "docs/screenshots/windows-webview2.png",
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "Se déconnecter" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Bienvenue dans votre espace." }),
+  ).toBeVisible();
+  assert.deepEqual(errors, []);
+  console.log(
+    "WebView2 : connexion, création persistée, import/téléchargement PDF et déconnexion réussis.",
+  );
+} catch (error) {
+  console.error(error);
+  console.error(logs.slice(-5000));
+  process.exitCode = 1;
+} finally {
+  if (browser) await browser.close().catch(() => {});
+  if (native && native.exitCode === null) native.kill();
+  if (backend && backend.exitCode === null) backend.kill();
+}

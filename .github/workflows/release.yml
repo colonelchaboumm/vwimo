@@ -1,0 +1,49 @@
+name: Publish Windows update
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: windows-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - uses: dtolnay/rust-toolchain@stable
+      - run: python -m venv .venv
+      - run: .\.venv\Scripts\python.exe -m pip install -r backend\requirements-build.txt
+      - run: npm ci
+      - run: .\.venv\Scripts\python.exe -m pytest
+      - run: npx playwright install chromium
+      - run: npm run test:e2e
+      - name: Build signed installer
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
+        run: |
+          if (-not $env:TAURI_SIGNING_PRIVATE_KEY) { throw 'Secret de signature manquant.' }
+          npm run desktop:build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - run: npm run test:native
+      - run: node scripts/release-manifest.mjs
+      - name: Publish validated release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          $installer = "apps/desktop/src-tauri/target/release/bundle/nsis/IMMO PILOT AI_${version}_x64-setup.exe"
+          gh release create "v$version" --draft --target $env:GITHUB_SHA --title "IMMO PILOT AI $version" --notes-file "docs/releases/$version.md" $installer "$installer.sig" '.local/release/latest.json' '.local/release/SHA256SUMS.txt'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh release edit "v$version" --draft=false --latest
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

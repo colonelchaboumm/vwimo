@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "IMMO PILOT AI",
+  "version": "0.3.0",
+  "identifier": "fr.immopilot.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "IMMO PILOT AI",
+        "width": 1440,
+        "height": 980,
+        "minWidth": 960,
+        "minHeight": 680
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src 'self' http://127.0.0.1:* ipc: http://ipc.localhost; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'; object-src 'none'; base-uri 'self'; frame-src 'none'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "shortDescription": "Votre poste de travail immobilier",
+    "category": "Business",
+    "icon": [
+      "icons/icon.ico"
+    ],
+    "resources": {
+      "resources/backend/": "backend/"
+    },
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDEzNEJDNTQ4M0ZGRUUwRTAKUldUZzRQNC9TTVZMRXlZVG5odmU5RWt1M2xEWEJnQXBmbjk2dTd0TC9nV2wwSThEWEsvc0FqbGsK",
+      "endpoints": [
+        "https://github.com/colonelchaboumm/vwimo/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}
