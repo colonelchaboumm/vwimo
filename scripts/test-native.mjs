@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import net from "node:net";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
@@ -40,10 +40,10 @@ function launch(file, args, env) {
   return child;
 }
 async function waitFor(url, child) {
-  for (let n = 0; n < 100; n++) {
+  for (let n = 0; n < 300; n++) {
     if (child.exitCode !== null) throw new Error(`Processus arrêté : ${logs}`);
     try {
-      const r = await fetch(url);
+      const r = await fetch(url, { signal: AbortSignal.timeout(1000) });
       if (r.ok) return await r.json();
     } catch {}
     await delay(200);
@@ -130,6 +130,7 @@ try {
 } catch (error) {
   console.error(error);
   console.error(logs.slice(-5000));
+  console.error(await readFile(path.join(runDir, "backend.log"), "utf8").then(text => text.slice(-3000)).catch(() => "Backend log absent."));
   process.exitCode = 1;
 } finally {
   if (browser) await browser.close().catch(() => {});

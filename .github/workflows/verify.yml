@@ -4,7 +4,8 @@ permissions:
   contents: read
 jobs:
   windows:
-    runs-on: windows-latest
+    # WebView2 automation is affected on Server 2025 (runner-images#14738).
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,6 +24,10 @@ jobs:
       - run: npm run test:e2e
       - run: npm run build
       - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri -> target
+          cache-on-failure: true
       - run: npm run desktop:build -- --config src-tauri/tauri.unsigned.conf.json
       - run: npm run test:native
       - uses: actions/upload-artifact@v4

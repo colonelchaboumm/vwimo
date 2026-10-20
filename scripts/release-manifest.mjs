@@ -1,4 +1,4 @@
-import { readFile, readdir, mkdir, writeFile } from "node:fs/promises";
+import { readFile, copyFile, mkdir, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 const config = JSON.parse(
@@ -14,6 +14,8 @@ if (
   throw new Error("Le tag ne correspond pas à la version compilée.");
 const directory = "apps/desktop/src-tauri/target/release/bundle/nsis";
 const filename = `IMMO PILOT AI_${version}_x64-setup.exe`;
+// GitHub normalise les espaces des pièces jointes : publier un nom stable.
+const publishedFilename = `IMMO-PILOT-AI_${version}_x64-setup.exe`;
 const signature = (
   await readFile(path.join(directory, filename + ".sig"), "utf8")
 ).trim();
@@ -26,11 +28,13 @@ const manifest = {
   platforms: {
     "windows-x86_64": {
       signature,
-      url: `https://github.com/colonelchaboumm/vwimo/releases/download/v${version}/${encodeURIComponent(filename)}`,
+      url: `https://github.com/colonelchaboumm/vwimo/releases/download/v${version}/${publishedFilename}`,
     },
   },
 };
 await mkdir(".local/release", { recursive: true });
+await copyFile(path.join(directory, filename), `.local/release/${publishedFilename}`);
+await copyFile(path.join(directory, filename + ".sig"), `.local/release/${publishedFilename}.sig`);
 await writeFile(
   ".local/release/latest.json",
   JSON.stringify(manifest, null, 2) + "\n",
@@ -38,5 +42,5 @@ await writeFile(
 const digest = createHash("sha256")
   .update(await readFile(path.join(directory, filename)))
   .digest("hex");
-await writeFile(".local/release/SHA256SUMS.txt", `${digest}  ${filename}\n`);
+await writeFile(".local/release/SHA256SUMS.txt", `${digest}  ${publishedFilename}\n`);
 console.log(`Manifeste signé préparé pour ${version}.`);

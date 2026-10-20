@@ -10,7 +10,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   release:
-    runs-on: windows-latest
+    # WebView2 automation is affected on Server 2025 (runner-images#14738).
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,6 +22,10 @@ jobs:
         with:
           python-version: '3.14'
       - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri -> target
+          cache-on-failure: true
       - run: python -m venv .venv
       - run: .\.venv\Scripts\python.exe -m pip install -r backend\requirements-build.txt
       - run: npm ci
@@ -42,7 +47,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $version = (Get-Content package.json | ConvertFrom-Json).version
-          $installer = "apps/desktop/src-tauri/target/release/bundle/nsis/IMMO PILOT AI_${version}_x64-setup.exe"
+          $installer = ".local/release/IMMO-PILOT-AI_${version}_x64-setup.exe"
           gh release create "v$version" --draft --target $env:GITHUB_SHA --title "IMMO PILOT AI $version" --notes-file "docs/releases/$version.md" $installer "$installer.sig" '.local/release/latest.json' '.local/release/SHA256SUMS.txt'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           gh release edit "v$version" --draft=false --latest
