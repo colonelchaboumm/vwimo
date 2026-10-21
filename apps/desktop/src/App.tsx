@@ -50,6 +50,10 @@ import {
 } from "./lib/preferences";
 import { RecordDetails } from "./components/RecordDetails";
 import { UpdateCenter } from "./components/UpdateCenter";
+import { CalendarPage } from "./components/commercial/CalendarPage";
+import { EstimatesPage } from "./components/commercial/EstimatesPage";
+import { MatchesPage } from "./components/commercial/MatchesPage";
+import "./components/commercial/commercial.css";
 import { Button } from "./components/ui/button";
 import { Modal } from "./components/ui/dialog";
 import { ContactForm, DocumentForm, MandateForm } from "./components/Forms";
@@ -83,13 +87,13 @@ const navigation = [
       { id: "buyers", label: "Acquéreurs", icon: Users },
       { id: "sellers", label: "Vendeurs", icon: House },
       { id: "mandates", label: "Mandats", icon: Building2 },
-      { id: "estimates", label: "Estimations", icon: BarChart3, phase: 2 },
+      { id: "matching", label: "Rapprochements", icon: Handshake },
+      { id: "estimates", label: "Estimations", icon: BarChart3 },
       { id: "map", label: "Carte immobilière", icon: Map, phase: 3 },
       {
         id: "calendar",
-        label: "Outlook & agenda",
+        label: "Agenda local",
         icon: CalendarDays,
-        phase: 2,
       },
     ],
   },
@@ -129,6 +133,9 @@ const pageNames: Record<string, string> = {
   settings: "Paramètres",
   contacts: "Tous les contacts",
   statistics: "Statistiques",
+  calendar: "Agenda local",
+  estimates: "Estimations",
+  matching: "Rapprochements",
 };
 type Editor =
   | { type: "contact"; item?: Contact; kind?: string }
@@ -236,7 +243,7 @@ function Login({
             Annecy & Grand Annecy
           </div>
         </div>
-        <small>IMMO PILOT AI · Version 0.4 · Fondations</small>
+        <small>IMMO PILOT AI · Version 0.5 · Votre activité, réunie</small>
       </div>
       <div className="login-form-wrap">
         <div className="login-form">
@@ -377,6 +384,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [editor, setEditor] = useState<Editor>(null);
+  const [commercialEditing, setCommercialEditing] = useState(false);
   const [toast, setToast] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
   const [automationBusy, setAutomationBusy] = useState(false);
@@ -821,7 +829,11 @@ export default function App() {
             )}
           </div>
           <div className="topbar-actions">
-            <UpdateCenter blocked={!!editor || automationBusy || loading} />
+            <UpdateCenter
+              blocked={
+                !!editor || commercialEditing || automationBusy || loading
+              }
+            />
             <Button
               size="icon"
               variant="ghost"
@@ -921,6 +933,37 @@ export default function App() {
           )}
           {data && (
             <>
+              {page === "calendar" && (
+                <CalendarPage
+                  contacts={data.contacts}
+                  mandates={data.mandates}
+                  readonly={readonly}
+                  onChanged={async () => {
+                    await reload();
+                  }}
+                  onEditing={setCommercialEditing}
+                  openContact={(item) => setEditor({ type: "contact", item })}
+                  openMandate={openMandate}
+                />
+              )}
+              {page === "estimates" && (
+                <EstimatesPage
+                  contacts={data.contacts}
+                  readonly={readonly}
+                  onChanged={async () => {
+                    await reload();
+                  }}
+                  onEditing={setCommercialEditing}
+                />
+              )}
+              {page === "matching" && (
+                <MatchesPage
+                  contacts={data.contacts}
+                  mandates={data.mandates}
+                  openContact={(item) => setEditor({ type: "contact", item })}
+                  openMandate={openMandate}
+                />
+              )}
               {page === "dashboard" && (
                 <Dashboard
                   data={data}
@@ -1359,7 +1402,7 @@ export default function App() {
                         <dt>Fuseau horaire</dt>
                         <dd>Europe/Paris</dd>
                         <dt>Version</dt>
-                        <dd>0.4.0 · Phase 1</dd>
+                        <dd>0.5.0 · Agenda, rapprochements et estimations</dd>
                       </dl>
                       <p>
                         {account.mode === "local"
@@ -1490,11 +1533,13 @@ export default function App() {
               : error
                 ? "Actualisation indisponible"
                 : data
-                  ? "Données persistées sur le serveur"
+                  ? account.mode === "local"
+                    ? "Données conservées sur cet ordinateur"
+                    : "Données persistées sur le serveur"
                   : "Service indisponible"}
           </span>
           <span>
-            IMMO PILOT AI <b>0.4</b>
+            IMMO PILOT AI <b>0.5</b>
           </span>
         </footer>
       </div>

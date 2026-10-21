@@ -1,0 +1,68 @@
+export type EventRecord = {
+  id: string;
+  version: number;
+  title: string;
+  kind: "visit" | "estimate" | "seller" | "buyer" | "signing" | "other";
+  starts_at: string;
+  ends_at: string;
+  location: string;
+  notes: string;
+  contact_id: string | null;
+  mandate_id: string | null;
+};
+export type Comparable = {
+  label: string;
+  source: string;
+  url: string | null;
+  observed_date: string;
+  kind: "sale" | "asking";
+  price: string;
+  surface: string;
+};
+export type EstimateDetails = {
+  district: string;
+  rooms: number | null;
+  bedrooms: number | null;
+  floor: string;
+  construction_year: number | null;
+  carrez_surface: string | null;
+  land_surface: string | null;
+  annual_charges: string | null;
+  property_tax: string | null;
+  dpe: string;
+  condition: string;
+  features: string;
+  works: string;
+};
+export type EstimateRecord = {
+  id: string;
+  version: number;
+  title: string;
+  address: string;
+  city: string;
+  property_type: string;
+  surface: string;
+  contact_id: string | null;
+  status: "draft" | "presented" | "accepted" | "archived";
+  low_price: string;
+  central_price: string;
+  high_price: string;
+  basis: "manual" | "sale" | "asking";
+  details: EstimateDetails;
+  comparables: Comparable[];
+  analysis: string;
+};
+export type Match = {
+  buyer_id: string;
+  buyer_name: string;
+  mandate_id: string;
+  reference: string;
+  title: string;
+  city: string;
+  price: string;
+  score: number;
+  compatible: boolean;
+  checks: string[];
+  failures: string[];
+  to_verify: string[];
+};

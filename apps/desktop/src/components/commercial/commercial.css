@@ -1,0 +1,344 @@
+.commercial-page {
+  min-width: 0;
+}
+.commercial-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin: 10px 0 28px;
+}
+.commercial-heading h1 {
+  font-size: clamp(25px, 2.6vw, 36px);
+  font-weight: 650;
+  letter-spacing: -1.2px;
+  margin: 10px 0;
+}
+.commercial-heading p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.8;
+  max-width: 600px;
+}
+.commercial-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.commercial-filters {
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+.commercial-filters > .field {
+  flex: 1;
+  min-width: 0;
+}
+.commercial-check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  padding-bottom: 12px;
+}
+.commercial-check input {
+  width: auto;
+}
+.commercial-page > .notice {
+  margin: 18px 0;
+  line-height: 1.8;
+}
+.commercial-status {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 14px 0;
+  line-height: 1.7;
+}
+.commercial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr));
+  gap: 22px;
+  margin-top: 22px;
+}
+.match-card,
+.estimate-card {
+  padding: 25px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.match-card h2,
+.estimate-card h2 {
+  font-size: 19px;
+  margin: 20px 0 9px;
+  letter-spacing: -0.4px;
+}
+.match-card p,
+.estimate-card p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+  margin: 8px 0 15px;
+}
+.match-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.match-top > strong {
+  font-size: 20px;
+  color: var(--accent);
+}
+.match-checks {
+  color: #24845b;
+}
+.match-card ul {
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 1.9;
+  margin: 15px 0;
+}
+.match-failure {
+  color: #bc4b38;
+}
+.match-card details {
+  border-top: 1px solid var(--border);
+  padding-top: 15px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.match-card summary,
+.commercial-details summary {
+  cursor: pointer;
+}
+.match-card .commercial-actions,
+.estimate-card .commercial-actions {
+  margin-top: 22px;
+}
+.estimate-central {
+  display: block;
+  font-size: 29px;
+  letter-spacing: -1px;
+  margin: 20px 0 0;
+}
+.estimate-card > small {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 11px;
+}
+.commercial-form {
+  padding: 24px;
+}
+.commercial-form fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.commercial-form fieldset:disabled {
+  opacity: 0.7;
+}
+.commercial-form > .commercial-actions {
+  justify-content: flex-end;
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.commercial-form .error,
+.commercial-form .notice {
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+.commercial-form textarea {
+  resize: vertical;
+  min-height: 85px;
+}
+.commercial-details {
+  padding: 22px 0;
+  margin-top: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.commercial-details > summary {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+.commercial-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 25px 0 18px;
+}
+.commercial-section-heading h3 {
+  font-size: 16px;
+}
+.commercial-section-heading h4 {
+  font-size: 13px;
+}
+.comparable-row {
+  background: var(--hover);
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.comparable-row .commercial-section-heading {
+  margin-top: 0;
+}
+.commercial-price-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 20px 0;
+}
+.commercial-align-end {
+  display: flex;
+  align-items: flex-end;
+}
+.calendar-toolbar {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.calendar-toolbar input {
+  width: auto;
+  min-width: 0;
+}
+.calendar-grid {
+  display: grid;
+  gap: 10px;
+}
+.calendar-week,
+.calendar-month {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.calendar-day {
+  min-height: 150px;
+  padding: 10px;
+  overflow-wrap: anywhere;
+}
+.calendar-day.is-today {
+  border-color: var(--accent);
+}
+.calendar-date {
+  padding: 8px 0 14px;
+  font-size: 11px;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+.is-today .calendar-date {
+  color: var(--accent);
+  font-weight: 650;
+}
+.calendar-event {
+  background: var(--soft);
+  border-radius: 9px;
+  margin: 0 0 10px;
+  padding: 10px;
+}
+.calendar-event > button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--text);
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+.calendar-event > button:disabled {
+  cursor: default;
+  opacity: 1;
+}
+.calendar-event span {
+  color: var(--accent);
+  font-size: 10px;
+}
+.calendar-event strong {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.calendar-event small,
+.calendar-event p {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+  white-space: pre-wrap;
+}
+.calendar-event p {
+  margin: 12px 0;
+}
+.calendar-day .commercial-status {
+  font-size: 10px;
+  align-items: flex-start;
+}
+.calendar-month .calendar-day {
+  min-height: 130px;
+}
+.calendar-day .commercial-actions {
+  margin-top: 12px;
+}
+@media (max-width: 1200px) {
+  .calendar-week {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .calendar-toolbar,
+  .commercial-heading {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 800px) {
+  .commercial-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .calendar-month {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .commercial-form {
+    padding: 18px;
+  }
+  .commercial-heading {
+    gap: 16px;
+  }
+}
+@media (max-width: 550px) {
+  .calendar-week,
+  .calendar-month {
+    grid-template-columns: 1fr;
+  }
+  .commercial-price-grid {
+    grid-template-columns: 1fr;
+  }
+  .calendar-toolbar {
+    align-items: stretch;
+  }
+  .calendar-toolbar > .commercial-actions {
+    width: 100%;
+  }
+  .commercial-heading .button {
+    font-size: 12px;
+  }
+  .commercial-form .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

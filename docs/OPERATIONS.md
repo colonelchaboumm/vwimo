@@ -38,6 +38,8 @@ GRANT INSERT, UPDATE ON contacts, buyer_criteria, properties, mandates, document
 GRANT DELETE ON buyer_criteria TO immo_app;
 GRANT INSERT, DELETE ON sessions TO immo_app;
 GRANT INSERT ON audit_logs TO immo_app;
+GRANT SELECT, INSERT, UPDATE ON estimates TO immo_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON calendar_events TO immo_app;
 ```
 
 Les UUID sont générés dans le backend ; aucune séquence métier n’est nécessaire. Le rôle d’administration conserve la création et la maintenance des comptes. Les droits seront revus à chaque ajout de tables.

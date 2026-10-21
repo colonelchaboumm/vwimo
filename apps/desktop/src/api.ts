@@ -83,7 +83,7 @@ export async function api<T>(
     const result =
       response.status === 204
         ? undefined
-        : path.endsWith("/download")
+        : path.split("?")[0].endsWith("/download")
           ? await response.blob()
           : await response.json();
     if (generation !== sessionGeneration)

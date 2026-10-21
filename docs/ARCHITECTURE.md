@@ -1,4 +1,4 @@
-# Architecture — phase 1
+# Architecture — fondations et premiers modules commerciaux
 
 ## Organisation
 
@@ -12,6 +12,9 @@ backend/
   app/models.py         Modèle relationnel SQLAlchemy
   app/schemas.py        Validation Pydantic des entrées
   app/main.py           API, authentification, autorisations et services phase 1
+  app/commercial.py     Agenda, exports ICS, rapprochements et estimations
+  app/commercial_schemas.py Validation des horaires, valeurs et comparables
+  app/estimate_pdf.py   Rapport PDF local et polices ReportLab embarquées
   app/manage.py         Initialisation et création des comptes
   app/backup.py         Sauvegarde/restauration SQLite locale et de démonstration
   migrations/           Migrations Alembic versionnées
@@ -39,6 +42,8 @@ flowchart LR
 ```
 
 Une instance correspond à l’espace métier d’un conseiller ou d’une petite équipe. Les rôles limitent les écritures ; ils ne cloisonnent pas les contacts entre utilisateurs. Ce n’est pas une architecture SaaS multi-tenant. L’introduction d’un SaaS nécessitera un identifiant d’organisation, une politique d’isolation et des tests dédiés.
+
+La migration `20261021_commercial` ajoute `calendar_events` et `estimates`, avec contraintes métier, clés étrangères indexées et versions de dossiers. Les comparables d’une estimation sont un ensemble JSON borné à 30 références, validé avant stockage. L’agenda enregistre des instants UTC et affiche Europe/Paris. Les rapprochements sont recalculés depuis les dossiers courants ; ils ne contiennent aucune donnée collectée sur un portail. Les rapports PDF sont construits en mémoire, sans téléchargement de polices, ni accès aux URL déclarées dans les sources.
 
 ## Schéma relationnel initial
 

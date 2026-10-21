@@ -3,7 +3,7 @@ from PyInstaller.utils.hooks import collect_all
 
 root = Path(SPECPATH)
 datas, binaries, hiddenimports = [], [], []
-for package in ("uvicorn", "alembic", "tzdata", "email_validator"):
+for package in ("uvicorn", "alembic", "tzdata", "email_validator", "reportlab"):
     package_data, package_bins, package_imports = collect_all(package)
     datas += package_data
     binaries += package_bins

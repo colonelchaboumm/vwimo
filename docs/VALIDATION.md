@@ -1,3 +1,16 @@
+# Livraison 0.5 — 21 octobre 2026
+
+- Backend : 65 tests réussis sur SQLite ; 64 réussis et 1 ignoré avec le lanceur PostgreSQL. Les tests ajoutés couvrent les liens et rôles, les conflits de modification, la persistance, les contrôles de rapprochement, les références d’estimation et la génération PDF.
+- Agenda : conservation d’un intervalle à travers le changement d’heure d’hiver, filtrage des rendez-vous chevauchant une période, refus des dates sans fuseau ou incohérentes, export ICS en UTC, échappement des textes et pliage UTF-8 à 75 octets.
+- Estimations : valeurs ordonnées, sources datées, références de ventes séparées des prix affichés, absence de références non présentée comme une analyse de marché. Rapport fictif généré et rendu avec Poppler ; mise en page A4 et polices françaises vérifiées visuellement.
+- Interface : 18 parcours navigateur réussis, dont création/modification/suppression d’un rendez-vous, refus d’une heure ambiguë, export ICS, estimation avec comparables de natures différentes, suggestion ne mélangeant pas ces natures, rapport PDF, reconnexion et navigation des rapprochements vers les mandats.
+- Windows/WebView2 : compte personnel, documents, déconnexion/reconnexion, agenda, création d’estimation et téléchargement d’un rapport généré par le backend embarqué réussis. Les polices nécessaires sont incluses dans le paquet.
+- Migration `20261021_commercial` : tables, index de clés étrangères, contraintes et versionnement. Le démarrage conserve la sauvegarde avant migration ; les bases SQLite et PostgreSQL sont testées séparément.
+
+Cette livraison ne fournit pas encore Charlie/OpenAI, la synchronisation Microsoft, les récurrences ou notifications Windows, DVF, le radar, les campagnes de prospection et la finance. Aucun envoi ou import externe n’est simulé comme un succès réel.
+
+---
+
 # Livraison 0.4 — 21 octobre 2026
 
 - Backend : 47 scénarios validés (suite de 46 puis test supplémentaire de migration locale). Avec le lanceur PostgreSQL : 46 réussis, 1 ignoré ; les tests propres au mode local utilisent SQLite.

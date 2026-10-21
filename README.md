@@ -1,10 +1,10 @@
 # IMMO PILOT AI
 
-Poste de travail immobilier pour Annecy et le Grand Annecy. **Version 0.4 — compte privé local et mises à jour intégrées.**
+Poste de travail immobilier pour Annecy et le Grand Annecy. **Version 0.5 — agenda, rapprochements et estimations avec rapport PDF.**
 
 ## Installer sous Windows
 
-Télécharger le fichier `IMMO-PILOT-AI_0.4.0_x64-setup.exe` depuis [la dernière version](https://github.com/colonelchaboumm/vwimo/releases/latest), puis l’installer et ouvrir l’application. Le backend Python est inclus et lancé automatiquement. Aucun terminal, Node ou Python à installer séparément.
+Télécharger le fichier `IMMO-PILOT-AI_0.5.0_x64-setup.exe` depuis [la dernière version](https://github.com/colonelchaboumm/vwimo/releases/latest), puis l’installer et ouvrir l’application. Le backend Python est inclus et lancé automatiquement. Aucun terminal, Node ou Python à installer séparément.
 
 Cette première installation active les mises à jour futures : une icône de téléchargement devient bleue lorsqu’une version est disponible. Cliquer dessus, lire les nouveautés puis choisir **Installer et redémarrer**. Les paquets sont vérifiés par signature avant installation ; les données restent dans le profil Windows. [Détails et procédure de publication](docs/MISES-A-JOUR.md).
 
@@ -15,6 +15,9 @@ Au premier lancement, créez votre compte local avec votre nom, votre e-mail et 
 - Tableau de bord calculé, signatures, échéances et priorités.
 - Contacts vendeurs/acquéreurs, critères de recherche, budgets, recherche sans accents, tri, export CSV et archivage contrôlé.
 - Mandats : bien, vendeur, prix, honoraires, dates, statut, DPE et conditions intercabinets.
+- Rapprochements expliqués selon les critères acquéreurs, avec exclusions des mandats non commercialisables et points à vérifier.
+- Agenda local jour/semaine/mois, rendez-vous associés aux dossiers, horaires Europe/Paris et export ICS.
+- Estimations manuelles, comparables sourcés et datés, distinction ventes/prix affichés et rapport PDF généré sur l’ordinateur.
 - Documents PDF, DOCX, XLSX, JPG et PNG : import, association et téléchargement authentifié avec contrôle d’intégrité.
 - Authentification Argon2, sessions expirables, rôles et historique des modifications.
 - Protection des saisies, conflits de modification détectés, modes clair/sombre et design inspiré de macOS.

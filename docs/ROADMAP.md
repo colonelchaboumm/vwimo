@@ -12,7 +12,9 @@ La version 0.2 apporte le nouveau design, le tri des contacts/mandats, la conser
 
 ## Phase 2 — intelligence commerciale
 
-Charlie et OpenAI avec outils autorisés, contexte de dossier, conversations et confirmations ; matching explicable ; import de fiches ; brouillons et envois Outlook confirmés ; OAuth/MSAL avec stockage sécurisé des tokens ; agenda ; estimations sourcées et rapports PDF.
+Livré en 0.5 : rapprochements explicables, agenda local jour/semaine/mois avec export ICS, dossiers d’estimation avec références déclarées et rapports PDF locaux. Les suggestions de fourchette utilisent les prix au m² minimum, médian et maximum d’un seul type de référence ; les montants finaux restent manuels. Les comparables ne sont pas vérifiés automatiquement.
+
+À poursuivre : Charlie/OpenAI avec outils autorisés, contexte de dossier, conversations et confirmations ; import de fiches ; brouillons et envois Outlook confirmés ; OAuth/MSAL avec stockage sécurisé des tokens ; synchronisation d’agenda, récurrences et notifications Windows ; connecteurs DVF, corrections et analyse assistée des estimations.
 
 ## Phase 3 — prospection et carte
 

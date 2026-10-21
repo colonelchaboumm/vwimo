@@ -135,3 +135,44 @@ class AutomationSettings(Base):
     max_followups: Mapped[int] = mapped_column(Integer, default=1)
     timezone: Mapped[str] = mapped_column(String(50), default="Europe/Paris")
     sector: Mapped[str] = mapped_column(String(120), default="Annecy et Grand Annecy")
+
+
+class CalendarEvent(Entity, Base):
+    __tablename__ = "calendar_events"
+    __table_args__ = (CheckConstraint("ends_at > starts_at", name="calendar_dates"),
+                     CheckConstraint("kind IN ('visit','estimate','seller','buyer','signing','other')", name="calendar_kind"),
+                     Index("ix_calendar_interval", "starts_at", "ends_at"))
+    title: Mapped[str] = mapped_column(String(180))
+    kind: Mapped[str] = mapped_column(String(20), default="other")
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    location: Mapped[str] = mapped_column(String(300), default="")
+    notes: Mapped[str] = mapped_column(Text, default="")
+    contact_id: Mapped[str | None] = mapped_column(ForeignKey("contacts.id", ondelete="RESTRICT"), index=True)
+    mandate_id: Mapped[str | None] = mapped_column(ForeignKey("mandates.id", ondelete="RESTRICT"), index=True)
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class Estimate(Entity, Base):
+    __tablename__ = "estimates"
+    __table_args__ = (CheckConstraint("surface > 0", name="estimate_surface"),
+                     CheckConstraint("low_price > 0 AND central_price >= low_price AND high_price >= central_price", name="estimate_prices"),
+                     CheckConstraint("status IN ('draft','presented','accepted','archived')", name="estimate_status"),
+                     CheckConstraint("basis IN ('manual','sale','asking')", name="estimate_basis"))
+    title: Mapped[str] = mapped_column(String(180))
+    address: Mapped[str] = mapped_column(String(250))
+    city: Mapped[str] = mapped_column(String(100), index=True)
+    property_type: Mapped[str] = mapped_column(String(40))
+    surface: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+    contact_id: Mapped[str | None] = mapped_column(ForeignKey("contacts.id", ondelete="RESTRICT"), index=True)
+    status: Mapped[str] = mapped_column(String(20), default="draft")
+    low_price: Mapped[Decimal] = mapped_column(Numeric(14, 2))
+    central_price: Mapped[Decimal] = mapped_column(Numeric(14, 2))
+    high_price: Mapped[Decimal] = mapped_column(Numeric(14, 2))
+    basis: Mapped[str] = mapped_column(String(20), default="sale")
+    details: Mapped[dict] = mapped_column(JSON, default=dict)
+    comparables: Mapped[list] = mapped_column(JSON, default=list)
+    analysis: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}

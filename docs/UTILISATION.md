@@ -32,6 +32,26 @@ Les compteurs sont calculés depuis les fiches enregistrées. « En portefeuille
 
 Les rappels signalent les mandats anciens de 45 jours ou plus et les échéances dans 15 jours ou dépassées. Cliquer sur une action ouvre le mandat concerné. Les honoraires potentiels sont avant partage et ne représentent ni une commission acquise ni un encaissement.
 
+## Rapprochements
+
+Dans **Rapprochements**, sélectionner un acquéreur ou un mandat, ou analyser le portefeuille. Les mandats actifs et sous offre sont inclus seulement si leur échéance n’est pas dépassée et leur commercialisation est autorisée. Le prix est comparé à la fourchette de budget, la surface au minimum demandé et la commune aux secteurs séparés par une virgule, un point-virgule ou un retour à la ligne.
+
+Le score correspond à trois contrôles structurés : un contrôle satisfait représente un tiers du score. Il ne mesure pas une probabilité de vente. Le nombre de chambres, le financement et les critères libres restent à vérifier manuellement. Cocher **Afficher aussi les écarts** pour voir les incompatibilités. Les boutons ouvrent les dossiers concernés. Aucun e-mail n’est envoyé.
+
+## Agenda local
+
+Ouvrir **Agenda local**, choisir la vue jour, semaine ou mois, puis **Nouveau rendez-vous**. Associer si utile un contact et un mandat. Les horaires sont saisis et affichés en Europe/Paris ; un horaire inexistant ou ambigu au changement d’heure est refusé. Cliquer sur un événement pour le modifier. La suppression exige une confirmation et refuse une version devenue obsolète.
+
+**Exporter ICS** télécharge les rendez-vous de la période affichée (la grille mensuelle inclut les jours adjacents). Le fichier peut être importé dans Outlook. Cela ne crée pas de synchronisation : récurrences, notifications Windows et connexion Microsoft ne sont pas encore disponibles. Les événements restent consultables et exportables en lecture seule.
+
+## Estimations et rapport PDF
+
+Dans **Estimations**, créer un dossier avec l’adresse, la commune, la surface et les caractéristiques utiles. Ajouter vos comparables avec désignation, source, date, prix, surface et, si disponible, URL. Choisir **vente constatée (source déclarée)** ou **prix affiché d’une annonce** pour chaque référence.
+
+La suggestion de fourchette utilise uniquement le type choisi dans **Base de référence** : prix au m² minimum, médian et maximum multipliés par la surface du bien. Elle ne corrige pas les différences de localisation, d’état, de date ou de prestations. Vérifier et modifier les trois valeurs avant d’enregistrer. Sans références, choisir **Évaluation manuelle**. Aucun prix n’est collecté ni vérifié automatiquement.
+
+Rédiger l’analyse et la stratégie, puis enregistrer. Le dossier peut passer de brouillon à présentée, acceptée ou archivée. **Rapport PDF** génère localement un document avec la fourchette finale, les caractéristiques, les comparables et sources déclarées, l’analyse et les limites de méthode. Les données restent disponibles après reconnexion et dans les sauvegardes SQLite. La génération ne dépend ni d’OpenAI ni d’un service hébergé.
+
 ## Documents
 
 Choisir **Ajouter un document**, puis un fichier et sa catégorie. Associer éventuellement un contact et/ou un mandat. Les formats pris en charge sont PDF, DOCX, XLSX, PNG et JPEG, dans la limite de 15 Mo.

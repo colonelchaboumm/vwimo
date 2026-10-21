@@ -166,9 +166,46 @@ try {
   await expect(
     page.getByText("Vendeur natif WebView2", { exact: true }),
   ).toBeVisible();
+  await page.getByRole("button", { name: "Agenda local", exact: true }).click();
+  await page.getByRole("button", { name: "Nouveau rendez-vous" }).click();
+  await page.getByLabel("Titre", { exact: true }).fill("Visite native locale");
+  await page
+    .getByRole("button", { name: "Enregistrer le rendez-vous" })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(
+    page.getByText("Visite native locale", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Estimations", exact: true }).click();
+  await page.getByRole("button", { name: "Nouvelle estimation" }).click();
+  await page.getByLabel("Nom du dossier").fill("Estimation native locale");
+  await page.getByLabel("Adresse du bien").fill("Adresse fictive native");
+  await page.getByLabel("Commune", { exact: true }).fill("Annecy");
+  await page.getByLabel("Surface habitable (m²)").fill("70");
+  await page.getByLabel("Valeur basse (€)").fill("350000");
+  await page.getByLabel("Valeur centrale (€)").fill("380000");
+  await page.getByLabel("Valeur haute (€)").fill("410000");
+  await page.getByRole("button", { name: "Enregistrer l’estimation" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  const reportDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Rapport PDF" }).click();
+  const report = await reportDownload;
+  assert.equal(await report.failure(), null);
+  const reportBytes = await readFile(await report.path());
+  assert.equal(reportBytes.subarray(0, 5).toString(), "%PDF-");
+  assert(
+    reportBytes.length > 10000,
+    "Le rapport embarque les polices nécessaires.",
+  );
+  await page
+    .getByRole("button", { name: "Rapprochements", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Les bonnes rencontres." }),
+  ).toBeVisible();
   assert.deepEqual(errors, []);
   console.log(
-    "WebView2 : compte local, confirmation du mot de passe, connexion, création persistée, PDF, déconnexion et reconnexion réussis.",
+    "WebView2 : compte local, dossiers, documents, reconnexion, agenda, estimation et rapport PDF avec polices embarquées réussis.",
   );
 } catch (error) {
   console.error(error);
