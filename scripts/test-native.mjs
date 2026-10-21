@@ -71,9 +71,32 @@ try {
   await expect(
     page.getByRole("button", { name: "Mises à jour de l’application" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Créez votre espace privé." }),
+  ).toBeVisible();
+  await mkdir("docs/screenshots", { recursive: true });
+  await page.screenshot({
+    path: "docs/screenshots/compte-local.png",
+    fullPage: true,
+  });
+  await page.getByLabel("Votre nom", { exact: true }).fill("Camille");
   await page
-    .getByRole("button", { name: "Ouvrir l’espace de démonstration" })
-    .click();
+    .getByLabel("Adresse e-mail", { exact: true })
+    .fill("native-account@example.com");
+  await page
+    .getByLabel("Mot de passe", { exact: true })
+    .fill("Native account secret 2026!");
+  await page
+    .getByLabel("Confirmer le mot de passe", { exact: true })
+    .fill("Une confirmation différente");
+  await page.getByRole("button", { name: "Créer mon compte local" }).click();
+  await expect(page.getByRole("alert")).toContainText(
+    "Les deux mots de passe ne correspondent pas",
+  );
+  await page
+    .getByLabel("Confirmer le mot de passe", { exact: true })
+    .fill("Native account secret 2026!");
+  await page.getByRole("button", { name: "Créer mon compte local" }).click();
   await expect(
     page.getByRole("heading", { name: "Bonjour, Camille." }),
   ).toBeVisible();
@@ -123,14 +146,38 @@ try {
   await expect(
     page.getByRole("heading", { name: "Bienvenue dans votre espace." }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Créer mon compte local" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Ouvrir l’espace de démonstration" }),
+  ).toHaveCount(0);
+  await page
+    .getByLabel("Adresse e-mail", { exact: true })
+    .fill("native-account@example.com");
+  await page
+    .getByLabel("Mot de passe", { exact: true })
+    .fill("Native account secret 2026!");
+  await page.getByRole("button", { name: "Se connecter", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Bonjour, Camille." }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Vendeurs", exact: true }).click();
+  await expect(
+    page.getByText("Vendeur natif WebView2", { exact: true }),
+  ).toBeVisible();
   assert.deepEqual(errors, []);
   console.log(
-    "WebView2 : connexion, création persistée, import/téléchargement PDF et déconnexion réussis.",
+    "WebView2 : compte local, confirmation du mot de passe, connexion, création persistée, PDF, déconnexion et reconnexion réussis.",
   );
 } catch (error) {
   console.error(error);
   console.error(logs.slice(-5000));
-  console.error(await readFile(path.join(runDir, "backend.log"), "utf8").then(text => text.slice(-3000)).catch(() => "Backend log absent."));
+  console.error(
+    await readFile(path.join(runDir, "backend.log"), "utf8")
+      .then((text) => text.slice(-3000))
+      .catch(() => "Backend log absent."),
+  );
   process.exitCode = 1;
 } finally {
   if (browser) await browser.close().catch(() => {});

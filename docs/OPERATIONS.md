@@ -6,7 +6,7 @@ Copier `.env.example` vers `.env` dans la racine. La configuration est lue par F
 
 | Variable | Valeur initiale / usage |
 |---|---|
-| `IMMO_MODE` | `demo` ou `real` |
+| `IMMO_MODE` | `demo`, `local` ou `real` |
 | `IMMO_DATABASE_URL` | `sqlite:///./.local/demo.db` ; mode réel : `postgresql+psycopg://…` |
 | `IMMO_STORAGE_DIR` | `.local/demo-documents` ; dossier distinct obligatoire en réel |
 | `IMMO_SESSION_HOURS` | `8`, de 1 à 24 |
@@ -15,6 +15,12 @@ Copier `.env.example` vers `.env` dans la racine. La configuration est lue par F
 | `IMMO_TEST_POSTGRES_URL` | Réservé aux tests, injecté par le lanceur PostgreSQL portable |
 
 Les clés OpenAI, client IDs Microsoft et tokens OAuth ne sont pas utilisés à ce stade. Ils seront ajoutés au backend au moment de leur intégration. Aucun identifiant n’est nécessaire pour utiliser la démonstration.
+
+## Espace personnel local (Windows 0.4)
+
+L’application Windows configure automatiquement `local.db` et `local-documents` sous `%LOCALAPPDATA%\fr.immopilot.desktop`. Le compte se crée dans l’interface. En développement, `scripts/start.ps1` utilise `.local/private`. Ces deux espaces sont distincts et ignorent la configuration de base du fichier `.env`.
+
+La sauvegarde SQLite accepte aussi `IMMO_MODE=local` avec l’URL exacte du fichier `local.db` et le dossier `local-documents`. Arrêter l’application avant une sauvegarde manuelle avec documents, puis utiliser `app.backup create` comme ci-dessous avec un nouveau nom d’archive. La restauration restitue un fichier `database.db` et un dossier `documents`, marqués `local` ; elle invalide les sessions et préserve le compte. Vérifier dans un espace neuf, sans écraser les données actives. Le mot de passe ne chiffre ni la base ni les archives.
 
 ## PostgreSQL réel
 

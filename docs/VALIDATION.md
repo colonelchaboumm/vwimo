@@ -1,3 +1,16 @@
+# Livraison 0.4 — 21 octobre 2026
+
+- Backend : 47 scénarios validés (suite de 46 puis test supplémentaire de migration locale). Avec le lanceur PostgreSQL : 46 réussis, 1 ignoré ; les tests propres au mode local utilisent SQLite.
+- Compte local : validation des champs et de la confirmation, empreinte Argon2id, mot de passe avec espaces préservés, e-mail insensible à la casse, refus d’un second propriétaire, deux inscriptions simultanées, refus de la connexion de démonstration et des requêtes hors boucle locale/origine autorisée.
+- Persistance : compte et dossiers conservés après réinitialisation du backend, sauvegarde/restauration du compte, invalidation des sessions restaurées, conservation de l’ancienne base de démonstration et sauvegarde avant migration locale.
+- Navigateur : 15 parcours de régression réussis. Formulaire local vérifié visuellement à 1440 px et 390 px, sans débordement horizontal et sans créer le compte de l’utilisateur.
+- Application Windows compilée : création du compte, erreur de confirmation, création d’un contact, import/téléchargement PDF, déconnexion et reconnexion avec dossiers conservés. L’API embarquée refuse une requête sans clé de processus.
+- TypeScript/Vite et compilation Tauri réussis. Installateur NSIS 0.4.0 et signature de mise à jour produits. Les identifiants, bases locales et clés privées sont exclus du dépôt.
+
+Le compte local ne chiffre pas les fichiers sur le disque et ne propose pas de récupération par e-mail. L’installation sur une machine vierge et le remplacement effectif par l’updater restent à vérifier. Les vérifications des versions précédentes ci-dessous constituent un historique.
+
+---
+
 # Livraison 0.3 — 20 octobre 2026
 
 - Backend : 35 tests réussis, dont démarrage autonome, conservation des dossiers et sauvegarde avant migration.

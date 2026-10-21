@@ -26,7 +26,7 @@ from sqlalchemy.orm.exc import StaleDataError
 from .config import Settings
 from .database import connect
 from .models import AuditLog, AutomationSettings, BuyerCriteria, Contact, Document, Installation, Mandate, Property, SessionToken, User, now
-from .schemas import AutomationInput, ContactInput, LoginInput, MandateInput
+from .schemas import AutomationInput, ContactInput, LoginInput, LocalRegistrationInput, MandateInput
 from .middleware import BodyLimitMiddleware
 
 hasher = PasswordHasher()
@@ -59,7 +59,7 @@ def create_app(settings: Settings | None = None):
         yield
         engine.dispose()
 
-    api = FastAPI(title="IMMO PILOT AI", version="0.3.0", lifespan=lifespan)
+    api = FastAPI(title="IMMO PILOT AI", version="0.4.0", lifespan=lifespan)
     api.state.sessions = sessions
     api.state.engine = engine
     api.add_middleware(BodyLimitMiddleware)
@@ -75,6 +75,12 @@ def create_app(settings: Settings | None = None):
 
     @api.middleware("http")
     async def headers(request, call_next):
+        if settings.mode == "local":
+            if not request.client or request.client.host not in ("127.0.0.1", "::1"):
+                return JSONResponse({"detail": "Cet espace est accessible uniquement sur cet ordinateur."}, 403)
+            origin = request.headers.get("origin")
+            if origin and origin not in settings.cors_origins:
+                return JSONResponse({"detail": "Origine non autorisée."}, 403)
         if settings.desktop_key and request.method != "OPTIONS" and not secrets.compare_digest(request.headers.get("x-immo-desktop-key", ""), settings.desktop_key):
             return JSONResponse({"detail": "Accès réservé à l’application Windows."}, 401)
         response = await call_next(request)
@@ -146,7 +152,25 @@ def create_app(settings: Settings | None = None):
     @api.get("/api/health")
     def health(db=Depends(database)):
         db.execute(text("SELECT 1"))
-        return {"status": "ok", "mode": settings.mode, "version": "0.3.0"}
+        return {"status": "ok", "mode": settings.mode, "version": "0.4.0",
+                "setup_required": settings.mode == "local" and db.scalar(select(User.id).limit(1)) is None}
+
+    @api.post("/api/auth/register-local", status_code=201)
+    def register_local(data: LocalRegistrationInput, db=Depends(database)):
+        if settings.mode != "local":
+            raise HTTPException(404, "Création locale indisponible dans cet environnement.")
+        # Verrou SQLite interprocessus : deux premières inscriptions simultanées
+        # ne doivent jamais créer deux propriétaires donnant accès aux mêmes dossiers.
+        db.execute(text("BEGIN IMMEDIATE"))
+        if db.scalar(select(User.id).limit(1)) is not None:
+            db.rollback()
+            raise HTTPException(409, "Un compte existe déjà sur cet ordinateur. Connectez-vous.")
+        account = User(name=data.name, email=str(data.email).lower(), role="admin",
+                       password_hash=hasher.hash(data.password))
+        db.add(account)
+        db.flush()
+        audit(db, account, "auth.local_account_created", account.id)
+        return issue(db, account)
 
     @api.post("/api/auth/login")
     def login(data: LoginInput, request: Request, db=Depends(database)):

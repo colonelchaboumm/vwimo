@@ -1,14 +1,14 @@
 # IMMO PILOT AI
 
-Poste de travail immobilier pour Annecy et le Grand Annecy. **Version 0.3 — application Windows autonome avec mises à jour intégrées.**
+Poste de travail immobilier pour Annecy et le Grand Annecy. **Version 0.4 — compte privé local et mises à jour intégrées.**
 
 ## Installer sous Windows
 
-Télécharger le fichier `IMMO PILOT AI_0.3.0_x64-setup.exe` depuis [la dernière version](https://github.com/colonelchaboumm/vwimo/releases/latest), puis l’installer et ouvrir l’application. Le backend Python est inclus et lancé automatiquement. Aucun terminal, Node ou Python à installer séparément.
+Télécharger le fichier `IMMO-PILOT-AI_0.4.0_x64-setup.exe` depuis [la dernière version](https://github.com/colonelchaboumm/vwimo/releases/latest), puis l’installer et ouvrir l’application. Le backend Python est inclus et lancé automatiquement. Aucun terminal, Node ou Python à installer séparément.
 
 Cette première installation active les mises à jour futures : une icône de téléchargement devient bleue lorsqu’une version est disponible. Cliquer dessus, lire les nouveautés puis choisir **Installer et redémarrer**. Les paquets sont vérifiés par signature avant installation ; les données restent dans le profil Windows. [Détails et procédure de publication](docs/MISES-A-JOUR.md).
 
-L’application autonome démarre en démonstration, avec des données fictives et aucun envoi externe. Les intégrations IA/Outlook et le mode réel ne sont pas encore activés dans cette distribution. La signature des mises à jour ne remplace pas un certificat Windows Authenticode.
+Au premier lancement, créez votre compte local avec votre nom, votre e-mail et un mot de passe de 12 caractères minimum. Aucun hébergement ni vérification par e-mail : les identifiants et dossiers restent sur cet ordinateur. Le mot de passe est conservé sous forme d’empreinte Argon2id. Un seul propriétaire est accepté par espace local. Les intégrations IA/Outlook ne sont pas encore activées. La signature des mises à jour ne remplace pas un certificat Windows Authenticode.
 
 ## Fonctionnalités
 
@@ -27,7 +27,9 @@ L’application autonome démarre en démonstration, avec des données fictives 
 .\scripts\start.ps1
 ```
 
-Prérequis de développement : Python 3.12+ et Node 20.19+. Ouvrir http://127.0.0.1:1420 puis l’espace de démonstration. Le terminal reste ouvert ; Ctrl+C arrête les services. Les données de développement sont dans `.local`, séparées des données de l’application installée.
+Prérequis de développement : Python 3.12+ et Node 20.19+. Ouvrir http://127.0.0.1:1420 puis créer le compte local. Le terminal reste ouvert ; Ctrl+C arrête les services. Les données de développement sont dans `.local/private`, séparées des données de l’application installée.
+
+Le mode de démonstration reste disponible avec `scripts/start.ps1 -Demo`, dans une base séparée. Les anciennes données de démonstration sont conservées. Le compte navigateur et le compte Windows appartiennent à des espaces distincts.
 
 Pour compiler Windows : Rust/Cargo et les outils C++ MSVC sont nécessaires. Le build embarque aussi Python avec PyInstaller.
 

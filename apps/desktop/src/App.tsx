@@ -158,13 +158,17 @@ function Login({
   message?: string;
 }) {
   const [mode, setMode] = useState("");
+  const [setupRequired, setSetupRequired] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const submitting = useRef(false);
   const health = useCallback(() => {
     setError("");
-    api<{ mode: string }>("/health")
-      .then((r) => setMode(r.mode))
+    api<{ mode: string; setup_required: boolean }>("/health")
+      .then((r) => {
+        setMode(r.mode);
+        setSetupRequired(r.setup_required === true);
+      })
       .catch((e) => setError(e.message));
   }, []);
   useEffect(health, [health]);
@@ -182,14 +186,27 @@ function Login({
         token: string;
         user: Omit<Account, "mode">;
         mode: string;
-      }>(demo ? "/auth/demo" : "/auth/login", {
-        method: "POST",
-        body: data ? JSON.stringify(data) : undefined,
-      });
+      }>(
+        demo
+          ? "/auth/demo"
+          : setupRequired
+            ? "/auth/register-local"
+            : "/auth/login",
+        {
+          method: "POST",
+          body: data ? JSON.stringify(data) : undefined,
+        },
+      );
       setToken(result.token);
       onLogin({ ...result.user, mode: result.mode });
     } catch (err) {
       setError((err as Error).message);
+      // Une inscription peut être confirmée en base même si sa réponse est perdue.
+      if (setupRequired) {
+        void api<{ setup_required: boolean }>("/health")
+          .then((r) => setSetupRequired(r.setup_required === true))
+          .catch(() => {});
+      }
     } finally {
       submitting.current = false;
       setBusy(false);
@@ -219,39 +236,101 @@ function Login({
             Annecy & Grand Annecy
           </div>
         </div>
-        <small>IMMO PILOT AI · Version 0.3 · Fondations</small>
+        <small>IMMO PILOT AI · Version 0.4 · Fondations</small>
       </div>
       <div className="login-form-wrap">
         <div className="login-form">
           <span className="brand-icon">
             <House />
           </span>
-          <h2>Bienvenue dans votre espace.</h2>
-          <p>Retrouvez vos clients, vos mandats et vos priorités.</p>
+          <h2>
+            {setupRequired
+              ? "Créez votre espace privé."
+              : "Bienvenue dans votre espace."}
+          </h2>
+          <p>
+            {mode === "local"
+              ? "Votre compte et vos dossiers restent sur cet ordinateur. Aucun hébergement nécessaire."
+              : "Retrouvez vos clients, vos mandats et vos priorités."}
+          </p>
           <form onSubmit={(e) => login(false, e)}>
+            {setupRequired && (
+              <label className="field">
+                <span>Votre nom</span>
+                <input
+                  name="name"
+                  autoComplete="name"
+                  minLength={2}
+                  maxLength={120}
+                  required
+                  disabled={busy}
+                />
+              </label>
+            )}
             <label className="field">
               <span>Adresse e-mail</span>
               <input
                 name="email"
                 type="email"
                 autoComplete="username"
+                disabled={busy}
                 required
                 placeholder="vous@agence.fr"
               />
             </label>
             <label className="field">
-              <span>Mot de passe</span>
+              <span id="login-password-label">Mot de passe</span>
               <input
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                aria-labelledby="login-password-label"
+                aria-describedby={
+                  setupRequired ? "login-password-help" : undefined
+                }
+                autoComplete={
+                  setupRequired ? "new-password" : "current-password"
+                }
+                minLength={setupRequired ? 12 : 1}
+                maxLength={256}
+                disabled={busy}
                 required
               />
+              {setupRequired && (
+                <small id="login-password-help">
+                  12 caractères minimum. Choisissez un mot de passe unique.
+                </small>
+              )}
             </label>
+            {setupRequired && (
+              <label className="field">
+                <span>Confirmer le mot de passe</span>
+                <input
+                  name="password_confirmation"
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={12}
+                  maxLength={256}
+                  required
+                  disabled={busy}
+                />
+              </label>
+            )}
             <Button disabled={busy || !mode}>
-              Se connecter <ArrowRight size={17} />
+              {busy
+                ? "Veuillez patienter…"
+                : setupRequired
+                  ? "Créer mon compte local"
+                  : "Se connecter"}{" "}
+              <ArrowRight size={17} />
             </Button>
           </form>
+          {mode === "local" && (
+            <p className="local-account-note">
+              L’adresse e-mail sert uniquement d’identifiant. Aucun message
+              n’est envoyé et aucune récupération par e-mail n’est disponible.
+              Conservez votre mot de passe en lieu sûr.
+            </p>
+          )}
           {mode === "demo" && (
             <div className="demo-entry">
               <span>EXPLORER EN TOUTE TRANQUILLITÉ</span>
@@ -278,7 +357,9 @@ function Login({
           )}
           <div className="login-security">
             <ShieldCheck size={15} />
-            Connexion sécurisée par session personnelle
+            {mode === "local"
+              ? "Mot de passe protégé par une empreinte Argon2id"
+              : "Connexion sécurisée par session personnelle"}
           </div>
           <div className="login-update">
             <UpdateCenter blocked={busy} />
@@ -1261,12 +1342,16 @@ export default function App() {
                         <dd>
                           {account.mode === "demo"
                             ? "Démonstration · données fictives"
-                            : "Données réelles"}
+                            : account.mode === "local"
+                              ? "Espace personnel local"
+                              : "Données réelles"}
                         </dd>
                         <dt>Base de données</dt>
                         <dd>
                           {data.settings.database === "sqlite"
-                            ? "SQLite · démonstration locale"
+                            ? account.mode === "local"
+                              ? "SQLite · sur cet ordinateur"
+                              : "SQLite · démonstration locale"
                             : "PostgreSQL"}
                         </dd>
                         <dt>Compte</dt>
@@ -1274,12 +1359,12 @@ export default function App() {
                         <dt>Fuseau horaire</dt>
                         <dd>Europe/Paris</dd>
                         <dt>Version</dt>
-                        <dd>0.3.0 · Phase 1</dd>
+                        <dd>0.4.0 · Phase 1</dd>
                       </dl>
                       <p>
-                        Les données réelles nécessitent une base PostgreSQL et
-                        un stockage séparés. Le passage en mode réel s’effectue
-                        dans la configuration du serveur.
+                        {account.mode === "local"
+                          ? "Votre compte et vos dossiers sont enregistrés sur cet ordinateur. Le mot de passe n’est jamais stocké en clair. Cette connexion protège l’accès dans l’application ; elle ne chiffre pas les fichiers du disque. L’ancienne démonstration reste conservée séparément."
+                          : "L’espace personnel local ne nécessite aucun serveur externe. Le mode partagé PostgreSQL reste disponible avec une configuration dédiée."}
                       </p>
                     </section>
                     <section className="panel info-panel">
@@ -1409,7 +1494,7 @@ export default function App() {
                   : "Service indisponible"}
           </span>
           <span>
-            IMMO PILOT AI <b>0.3</b>
+            IMMO PILOT AI <b>0.4</b>
           </span>
         </footer>
       </div>

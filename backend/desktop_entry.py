@@ -21,11 +21,11 @@ from app.manage import initialize
 from app.main import create_app
 
 
-def prepare(data_dir: Path, key: str):
+def prepare(data_dir: Path, key: str, mode: str = "local"):
     data_dir.mkdir(parents=True, exist_ok=True)
-    settings = Settings(_env_file=None, mode="demo",
-        database_url="sqlite:///" + (data_dir / "demo.db").as_posix(),
-        storage_dir=data_dir / "documents", desktop_key=key,
+    settings = Settings(_env_file=None, mode=mode,
+        database_url="sqlite:///" + (data_dir / ("local.db" if mode == "local" else "demo.db")).as_posix(),
+        storage_dir=data_dir / ("local-documents" if mode == "local" else "documents"), desktop_key=key,
         cors_origins=["http://tauri.localhost", "tauri://localhost"])
     settings.validate_runtime()
     config = Config()
@@ -43,7 +43,7 @@ def prepare(data_dir: Path, key: str):
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%f")
         backup(settings, data_dir / "backups" / f"before-migration-{stamp}.zip")
     command.upgrade(config, "head")
-    initialize(settings, demo=True)
+    initialize(settings, demo=mode == "demo")
     return settings
 
 

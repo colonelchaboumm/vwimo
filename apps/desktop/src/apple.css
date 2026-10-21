@@ -2525,3 +2525,5 @@ tbody tr:hover {
 .update-content progress { width: 100%; accent-color: var(--accent); }
 .login-update { display: flex; justify-content: center; margin-top: 18px; }
 @media(max-width:420px) { .topbar-actions > .update-button:first-child { display: inline-flex; } }
+.local-account-note { font-size: 12px !important; line-height: 1.6; color: var(--muted); margin-top: 18px; }
+.login-form .field small { font-size: 12px; line-height: 1.5; }

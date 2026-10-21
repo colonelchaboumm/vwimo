@@ -4,7 +4,7 @@
 
 Architecture, schéma et migrations, API, interface, authentification locale, contacts et critères acquéreurs, vendeurs, mandats, gestion documentaire initiale, journal d’actions, démonstration isolée, scripts de lancement, tests et documentation sont livrés.
 
-La version 0.3 embarque le backend Python, conserve les données dans le profil Windows et intègre les mises à jour signées depuis GitHub. Ses parcours natifs ont été vérifiés le 20 octobre 2026. La signature Authenticode et les vérifications d’installation sur d’autres machines restent à réaliser. Le mode autonome reste en démonstration SQLite.
+La version 0.3 embarque le backend Python, conserve les données dans le profil Windows et intègre les mises à jour signées depuis GitHub. Ses parcours natifs ont été vérifiés le 20 octobre 2026. La signature Authenticode et les vérifications d’installation sur d’autres machines restent à réaliser. La version 0.4 ajoute un espace personnel SQLite : compte propriétaire créé dans l’interface, sans hébergement, données persistantes et démonstration conservée séparément. La récupération et le changement du mot de passe depuis l’interface restent à prévoir.
 
 Avant une utilisation réelle : finaliser la chaîne native, durcir le déploiement, exécuter la politique de conservation/effacement, ajouter le scan documentaire, valider les sauvegardes PostgreSQL et organiser les mises à jour signées. Les API de listes chargent actuellement le portefeuille complet : pagination et recherche serveur globale seront nécessaires pour de gros volumes.
 

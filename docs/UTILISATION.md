@@ -2,7 +2,13 @@
 
 ## Connexion
 
-Lancer `scripts/start.ps1`, ouvrir l’adresse affichée et choisir l’espace de démonstration. Les noms, biens et montants sont fictifs ; aucun téléphone ni e-mail réel n’est fourni dans le jeu de données. Le bandeau de démonstration reste visible sur toutes les pages.
+Ouvrir l’application Windows, puis choisir votre nom, votre adresse e-mail, un mot de passe de 12 caractères minimum et sa confirmation. Cliquer sur **Créer mon compte local**. L’adresse e-mail sert uniquement d’identifiant : aucun message ni lien de validation n’est envoyé. L’espace démarre sans dossiers fictifs.
+
+Aux lancements suivants, utiliser **Se connecter** avec le même e-mail et mot de passe. Un seul compte propriétaire peut être créé dans cet espace. La session expire après huit heures et se ferme avec l’interface ; les dossiers et le compte sont conservés. Le mot de passe n’est jamais stocké en clair : seule son empreinte Argon2id est conservée.
+
+Conserver votre mot de passe dans un gestionnaire : cette version ne propose pas de récupération par e-mail. La connexion protège l’accès dans l’application ; elle ne chiffre pas la base et les documents sur le disque. Protéger également votre session Windows et vos sauvegardes.
+
+En développement, `scripts/start.ps1` ouvre un espace local distinct dans `.local/private`. `scripts/start.ps1 -Demo` ouvre l’ancienne démonstration. La mise à jour 0.4 préserve les anciennes bases de démonstration séparément ; elle ne les importe pas dans l’espace personnel.
 
 ## Contacts
 

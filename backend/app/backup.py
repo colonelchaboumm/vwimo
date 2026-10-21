@@ -1,4 +1,4 @@
-"""Sauvegarde et restauration isolée du mode de démonstration SQLite."""
+"""Sauvegarde et restauration isolée des espaces SQLite locaux et de démonstration."""
 import argparse
 import hashlib
 import json
@@ -16,7 +16,7 @@ from .config import Settings
 
 def backup(settings: Settings, destination: Path):
     url = make_url(settings.database_url)
-    if url.drivername != "sqlite" or settings.mode != "demo":
+    if url.drivername != "sqlite" or settings.mode not in ("demo", "local"):
         raise ValueError("Pour PostgreSQL, utilisez la procédure pg_dump et stockage décrite dans docs/OPERATIONS.md.")
     source = Path(url.database).resolve()
     if not source.is_file():
@@ -27,8 +27,8 @@ def backup(settings: Settings, destination: Path):
         with closing(sqlite3.connect(source)) as connection, closing(sqlite3.connect(snapshot)) as target:
             connection.backup(target)
             mode = target.execute("SELECT mode FROM installation WHERE id=1").fetchone()
-            if mode != ("demo",):
-                raise ValueError("La base source n'est pas une base de démonstration.")
+            if mode != (settings.mode,):
+                raise ValueError("Le mode de la base source ne correspond pas à la configuration.")
             # Une restauration ne réactive jamais les anciennes sessions.
             target.execute("DELETE FROM sessions")
             documents = target.execute("SELECT storage_key, sha256 FROM documents").fetchall()
@@ -43,7 +43,7 @@ def backup(settings: Settings, destination: Path):
             archive.write(snapshot, "database.db")
             for key, _ in documents:
                 archive.write(settings.storage_dir / key, f"documents/{key}")
-            archive.writestr("manifest.json", json.dumps({"version": 1, "mode": "demo", "created_at": datetime.now(timezone.utc).isoformat(), "sha256": checksums}))
+            archive.writestr("manifest.json", json.dumps({"version": 1, "mode": settings.mode, "created_at": datetime.now(timezone.utc).isoformat(), "sha256": checksums}))
     return destination
 
 
@@ -59,7 +59,7 @@ def restore(archive_path: Path, destination: Path):
             if path.is_absolute() or ".." in path.parts or "\\" in name or ":" in name:
                 raise ValueError("Chemin dangereux dans l'archive.")
         manifest = json.loads(archive.read("manifest.json"))
-        if manifest.get("version") != 1 or manifest.get("mode") != "demo" or set(names) != set(manifest["sha256"]) | {"manifest.json"}:
+        if manifest.get("version") != 1 or manifest.get("mode") not in ("demo", "local") or set(names) != set(manifest["sha256"]) | {"manifest.json"}:
             raise ValueError("Format de sauvegarde incompatible.")
         for name, checksum in manifest["sha256"].items():
             if hashlib.sha256(archive.read(name)).hexdigest() != checksum:
@@ -67,11 +67,11 @@ def restore(archive_path: Path, destination: Path):
         destination.mkdir(parents=True)
         archive.extractall(destination)
     (destination / "documents").mkdir(exist_ok=True)
-    (destination / "documents" / ".installation-mode").write_text("demo", encoding="utf-8")
+    (destination / "documents" / ".installation-mode").write_text(manifest["mode"], encoding="utf-8")
     with closing(sqlite3.connect(destination / "database.db")) as connection:
         if connection.execute("PRAGMA integrity_check").fetchone() != ("ok",):
             raise ValueError("La base restaurée est endommagée.")
-        if connection.execute("SELECT mode FROM installation WHERE id=1").fetchone() != ("demo",):
+        if connection.execute("SELECT mode FROM installation WHERE id=1").fetchone() != (manifest["mode"],):
             raise ValueError("Mode de la base restaurée incompatible.")
         connection.execute("DELETE FROM sessions")
         connection.commit()

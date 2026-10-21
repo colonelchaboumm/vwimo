@@ -13,7 +13,7 @@ backend/
   app/schemas.py        Validation Pydantic des entrées
   app/main.py           API, authentification, autorisations et services phase 1
   app/manage.py         Initialisation et création des comptes
-  app/backup.py         Sauvegarde/restauration SQLite de démonstration
+  app/backup.py         Sauvegarde/restauration SQLite locale et de démonstration
   migrations/           Migrations Alembic versionnées
   tests/                Tests API, sécurité, persistance et sauvegarde
 scripts/                Installation, lancement et PostgreSQL de test
@@ -32,6 +32,7 @@ flowchart LR
   API --> Auth[Sessions et contrôle des rôles]
   API --> ORM[SQLAlchemy]
   ORM --> PG[(PostgreSQL : données réelles)]
+  ORM --> Local[(SQLite : espace personnel local)]
   ORM --> Demo[(SQLite : démonstration isolée)]
   API --> Files[Documents privés + SHA-256]
   API --> Audit[Journal d'actions]
@@ -76,6 +77,7 @@ Les autres entités du cahier des charges seront introduites avec les services q
 - Sessions de 8 h par défaut. Mot de passe de 12 caractères minimum lors de la création par CLI.
 - Toutes les routes métier vérifient la session ; chaque écriture exige `advisor` ou `admin`.
 - Origines CORS explicites, écoute locale par défaut, pas de secrets dans le bundle.
+- En mode local, création d’un unique propriétaire avec e-mail et mot de passe Argon2id ; contrôle de boucle locale et d’origine HTTP, clé de processus supplémentaire pour le client Windows. SQLite conserve le compte et les dossiers hors du dossier d’installation. Le mode local ne propose pas de connexion de démonstration.
 - En mode réel, connexion de démonstration indisponible et PostgreSQL obligatoire.
 - Marqueurs de mode sur la base et le dossier documentaire : une configuration incompatible est refusée.
 - Fichiers limités à 15 Mo, noms de stockage aléatoires, signature initiale vérifiée, pas d’extraction automatique ni d’exécution de macros.

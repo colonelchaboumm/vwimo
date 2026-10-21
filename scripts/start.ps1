@@ -1,4 +1,4 @@
-param([switch]$Desktop)
+param([switch]$Desktop, [switch]$Demo)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $projectRoot
@@ -10,7 +10,8 @@ try {
     New-Item -ItemType Directory -Force '.local' | Out-Null
     try { $health = Invoke-RestMethod 'http://127.0.0.1:8000/api/health' -TimeoutSec 2 } catch { $health = $null }
     if ($health) { throw 'Le port 8000 est déjà utilisé. Arrêtez le serveur existant avant de lancer cette commande.' }
-    $backendProcess = Start-Process -FilePath $pythonPath -ArgumentList '-m app.serve' -WorkingDirectory $projectRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput '.local\backend.log' -RedirectStandardError '.local\backend-error.log'
+    $backendArgs = if ($Demo) { '-m app.serve' } else { '-m app.serve --local' }
+    $backendProcess = Start-Process -FilePath $pythonPath -ArgumentList $backendArgs -WorkingDirectory $projectRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput '.local\backend.log' -RedirectStandardError '.local\backend-error.log'
     $ready = $false
     for ($attempt = 0; $attempt -lt 40; $attempt++) {
         Start-Sleep -Milliseconds 250

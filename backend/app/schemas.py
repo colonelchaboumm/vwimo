@@ -91,3 +91,20 @@ class LoginInput(Input):
 
 class AutomationInput(Input):
     enabled: bool
+
+
+class LocalRegistrationInput(LoginInput):
+    name: str = Field(min_length=2, max_length=120)
+    password: str = Field(min_length=12, max_length=256)
+    password_confirmation: str = Field(min_length=12, max_length=256)
+
+    @model_validator(mode="after")
+    def valid_registration(self):
+        self.name = self.name.strip()
+        if len(self.name) < 2:
+            raise ValueError("Renseignez votre nom (2 caractères minimum).")
+        if not self.password.strip():
+            raise ValueError("Le mot de passe ne peut pas contenir uniquement des espaces.")
+        if self.password != self.password_confirmation:
+            raise ValueError("Les deux mots de passe ne correspondent pas.")
+        return self

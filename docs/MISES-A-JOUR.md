@@ -10,11 +10,13 @@ Un échec de connexion n’est pas présenté comme « à jour ». Une signature
 
 ## Données
 
-Les données de l’application autonome se trouvent dans `%LOCALAPPDATA%\fr.immopilot.desktop` : `demo.db`, `documents`, `backups` et `backend.log`. Elles sont séparées des fichiers du programme. Avant une migration de schéma, une sauvegarde de la base et des documents est créée ; une sauvegarde impossible bloque le démarrage avant migration.
+Les données de l’application autonome se trouvent dans `%LOCALAPPDATA%\fr.immopilot.desktop` : `local.db`, `local-documents`, `backups` et `backend.log`. Elles sont séparées des fichiers du programme. Avant une migration de schéma, une sauvegarde de la base et des documents est créée ; une sauvegarde impossible bloque le démarrage avant migration.
 
-Le mode navigateur de développement garde ses données dans `.local` du projet. Il s’agit d’un espace différent. Pour transférer une démonstration existante, arrêter les applications, créer une sauvegarde avec `app.backup`, la restaurer dans un dossier neuf, puis placer `database.db` sous le nom `demo.db` et le dossier `documents` dans le dossier Windows **uniquement si celui-ci n’existe pas encore**. Ne jamais remplacer une base déjà utilisée. Conserver l’original et la sauvegarde. Les tests utilisent des dossiers distincts.
+Depuis la version 0.4, le compte propriétaire est créé au premier lancement. Les anciens fichiers `demo.db` et `documents` sont conservés séparément, sans import automatique. Le mot de passe est haché avec Argon2id ; les dossiers ne sont pas chiffrés par cette connexion.
 
-La version autonome actuelle utilise le mode démonstration SQLite. Le mode réel PostgreSQL et les intégrations externes nécessitent encore leur déploiement dédié.
+Le mode navigateur de développement garde ses données personnelles dans `.local/private` du projet. Il s’agit d’un espace différent. Pour transférer une démonstration existante, arrêter les applications, créer une sauvegarde avec `app.backup`, la restaurer dans un dossier neuf, puis placer `database.db` sous le nom `demo.db` et le dossier `documents` dans le dossier Windows **uniquement si celui-ci n’existe pas encore**. Ne jamais remplacer une base déjà utilisée. Conserver l’original et la sauvegarde. Les tests utilisent des dossiers distincts.
+
+La version autonome utilise un espace personnel SQLite, sans service d’authentification hébergé. Le mode serveur PostgreSQL reste distinct. Les mises à jour conservent le compte et les dossiers personnels.
 
 ## Publication d’une nouvelle version
 

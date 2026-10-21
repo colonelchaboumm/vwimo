@@ -7,7 +7,7 @@ from pydantic import Field
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_prefix="IMMO_", extra="ignore")
-    mode: Literal["demo", "real"] = "demo"
+    mode: Literal["demo", "local", "real"] = "demo"
     database_url: str = "sqlite:///./.local/demo.db"
     storage_dir: Path = Path(".local/demo-documents")
     cors_origins: list[str] = ["http://127.0.0.1:1420", "http://localhost:1420", "http://tauri.localhost", "tauri://localhost"]
@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     desktop_key: str = ""
 
     def validate_runtime(self):
+        if self.mode == "local" and not self.database_url.startswith("sqlite:///"):
+            raise ValueError("L’espace personnel local exige une base SQLite sur cet ordinateur.")
         if self.mode == "real" and not self.database_url.startswith("postgresql"):
             raise ValueError("Le mode réel exige PostgreSQL et une base dédiée.")
         self.storage_dir.mkdir(parents=True, exist_ok=True)
