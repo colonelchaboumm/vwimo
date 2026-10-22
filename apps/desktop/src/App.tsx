@@ -60,6 +60,9 @@ import { RadarPage } from "./components/radar/RadarPage";
 import { ProspectingPage } from "./components/radar/ProspectingPage";
 import { PropertyMapPage } from "./components/radar/PropertyMapPage";
 import { OutlookSetup } from "./components/OutlookSetup";
+import { TransactionsPage } from "./components/finance/TransactionsPage";
+import { FinancePage } from "./components/finance/FinancePage";
+import "./components/finance/finance.css";
 import "./components/radar/radar.css";
 import { Button } from "./components/ui/button";
 import { Modal } from "./components/ui/dialog";
@@ -107,12 +110,11 @@ const navigation = [
   {
     group: "VOTRE ENTREPRISE",
     items: [
-      { id: "transactions", label: "Transactions", icon: Handshake, phase: 4 },
+      { id: "transactions", label: "Transactions", icon: Handshake },
       {
         id: "finance",
-        label: "Commissions & factures",
+        label: "Commissions & revenus",
         icon: Wallet,
-        phase: 4,
       },
       {
         id: "referrals",
@@ -147,6 +149,8 @@ const pageNames: Record<string, string> = {
   radar: "Radar immobilier",
   prospecting: "Prospection",
   map: "Carte immobilière",
+  transactions: "Transactions",
+  finance: "Commissions & revenus",
 };
 type Editor =
   | { type: "contact"; item?: Contact; kind?: string }
@@ -254,7 +258,7 @@ function Login({
             Annecy & Grand Annecy
           </div>
         </div>
-        <small>IMMO PILOT AI · Version 0.7 · Votre activité, réunie</small>
+        <small>IMMO PILOT AI · Version 0.8 · Votre activité, réunie</small>
       </div>
       <div className="login-form-wrap">
         <div className="login-form">
@@ -972,6 +976,21 @@ export default function App() {
                 />
               )}
               {page === "map" && <PropertyMapPage />}
+              {page === "transactions" && (
+                <TransactionsPage
+                  contacts={data.contacts}
+                  mandates={data.mandates}
+                  readonly={readonly}
+                  onEditing={setCommercialEditing}
+                />
+              )}
+              {page === "finance" && (
+                <FinancePage
+                  contacts={data.contacts}
+                  role={account.role}
+                  onEditing={setCommercialEditing}
+                />
+              )}
               {page === "calendar" && (
                 <CalendarPage
                   contacts={data.contacts}
@@ -1441,7 +1460,7 @@ export default function App() {
                         <dt>Fuseau horaire</dt>
                         <dd>Europe/Paris</dd>
                         <dt>Version</dt>
-                        <dd>0.7.0 · Radar, carte et suivi de prospection</dd>
+                        <dd>0.8.0 · Transactions et commissions</dd>
                       </dl>
                       <p>
                         {account.mode === "local"
@@ -1606,7 +1625,7 @@ export default function App() {
                   : "Service indisponible"}
           </span>
           <span>
-            IMMO PILOT AI <b>0.7</b>
+            IMMO PILOT AI <b>0.8</b>
           </span>
         </footer>
       </div>

@@ -1,10 +1,10 @@
 # IMMO PILOT AI
 
-Poste de travail immobilier pour Annecy et le Grand Annecy. **Version 0.7 — radar déclaré, carte et suivi de prospection.**
+Poste de travail immobilier pour Annecy et le Grand Annecy. **Version 0.8 — transactions, commissions et encaissements déclarés.**
 
 ## Installer sous Windows
 
-Télécharger le fichier `IMMO-PILOT-AI_0.7.0_x64-setup.exe` depuis [la dernière version](https://github.com/colonelchaboumm/vwimo/releases/latest), puis l’installer et ouvrir l’application. Le backend Python est inclus et lancé automatiquement. Aucun terminal, Node ou Python à installer séparément.
+Télécharger le fichier `IMMO-PILOT-AI_0.8.0_x64-setup.exe` depuis [la dernière version](https://github.com/colonelchaboumm/vwimo/releases/latest), puis l’installer et ouvrir l’application. Le backend Python est inclus et lancé automatiquement. Aucun terminal, Node ou Python à installer séparément.
 
 Cette première installation active les mises à jour futures : une icône de téléchargement devient bleue lorsqu’une version est disponible. Cliquer dessus, lire les nouveautés puis choisir **Installer et redémarrer**. Les paquets sont vérifiés par signature avant installation ; les données restent dans le profil Windows. [Détails et procédure de publication](docs/MISES-A-JOUR.md).
 
@@ -12,6 +12,9 @@ Au premier lancement, créez votre compte local avec votre nom, votre e-mail et 
 
 ## Fonctionnalités
 
+- Transactions : dossier par mandat, étapes jusqu’à l’acte, acquéreur, dates, financement, conditions, pièces à vérifier et documents associés.
+- Commissions : vente, entrée de mandat, courtage, déménagement, recommandation ou autre partenaire ; montant fixe ou barème configurable, paliers par tranche ou globaux avec rattrapage, cumul mensuel/annuel et reprise explicite.
+- Prévisions, validation confirmée après recalcul, encaissements partiels, reste dû et export CSV. Montants au centime ; HT, TTC et montants contractuels séparés. Aucun calcul fiscal ni facture dans cette version.
 - Charlie : briefing, synthèses et brouillons avec contexte visible, historique privé et mode local fondé sur des règles. Génération OpenAI facultative après confirmation de chaque transmission.
 - Radar par saisie/CSV avec prévisualisation, URL répétées ignorées, historique des prix déclarés, filtres et doublons possibles à vérifier.
 - Prospection vendeurs particuliers : autorisations déclarées, oppositions, journal manuel, échéance de relance et compteurs Europe/Paris. Aucun envoi automatique.

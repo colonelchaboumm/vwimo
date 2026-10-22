@@ -1,3 +1,16 @@
+# Livraison 0.8 — 22 octobre 2026
+
+- Backend : 119 tests réussis sur SQLite ; 118 réussis et 1 ignoré sur PostgreSQL. Les 22 nouveaux cas couvrent calculs par tranche/global, franchissement de seuil, arrondis au centime, reprise et remise à zéro mensuelle/annuelle, dates, unicité du dossier par mandat, versions, preuve déclarée, confirmation liée au calcul, validations concurrentes, encaissements partiels/idempotents et dépassement concurrent refusé, export CSV sûr et droits lecteur.
+- Concurrence : une course entre relecture du barème et calcul a été reproduite puis corrigée en conservant le même objet versionné jusqu’à l’écriture. Le test impose deux calculs simultanés avant toute validation et exige un conflit pour le second. Les doublons de versement réessayés ne sont pas ajoutés ; un versement qui dépasse le reste est refusé.
+- Interface : 27 parcours navigateur réussis, dont création transaction → barème → revenu prévisionnel au centime → recalcul → confirmation explicite → deux encaissements → réouverture persistante → export CSV. Contrôle supplémentaire à 390 pixels sans débordement horizontal. Captures transactions et finance vérifiées visuellement.
+- Windows/WebView2 : suite native complète réussie avec compte local, documents/PDF, agenda, Charlie, clé fictive DPAPI, radar, carte, revenu courtier fixe, validation et encaissement partiel. Backend embarqué et données isolées, sans fermer l’application personnelle.
+- TypeScript/Vite, compilation Tauri, installateur NSIS 0.8.0 et signature updater générés. L’aperçu local répond en version 0.8.0 après sauvegarde automatique et migration `20261022_finance`.
+- Le délai d’arrêt du PostgreSQL de test passe de 10 à 30 secondes après un dépassement sous charge ; une erreur de démarrage, de test ou d’arrêt conserve un code de sortie non nul. Nouvelle exécution complète réussie avec arrêt confirmé.
+
+Les montants sont déclaratifs et les conditions contractuelles restent saisies par l’utilisateur. Aucun régime fiscal, seuil ou taux de rémunération réel n’est inventé. Aucune facture, déclaration fiscale, banque, correction/avoir sur revenu validé ou connexion Microsoft réelle n’est livrée ici. L’installation sur machine vierge et le remplacement effectif d’une installation par l’updater restent à vérifier.
+
+---
+
 # Livraison 0.7 — 22 octobre 2026
 
 - Backend : suite de 97 tests sur SQLite ; 96 réussis et 1 ignoré sur PostgreSQL. Les 16 nouveaux tests couvrent radar/imports, URL canoniques, transactions sans écriture partielle, historique des prix, conflits concurrents, rôles, séquences de prospection, arrêt, compteurs Europe/Paris et préparation Outlook.

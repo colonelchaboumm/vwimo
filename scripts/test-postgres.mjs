@@ -15,14 +15,14 @@ const pgCtl =
     ? (await import("@embedded-postgres/windows-x64")).pg_ctl
     : null;
 const runFile = promisify(execFile);
-const stopArgs = ["-D", databaseDir, "-m", "fast", "-w", "-t", "10", "stop"];
+const stopArgs = ["-D", databaseDir, "-m", "fast", "-w", "-t", "30", "stop"];
 let ctlStarted = false;
 process.once("exit", () => {
   if (ctlStarted) {
     try {
       execFileSync(pgCtl, stopArgs, {
         windowsHide: true,
-        timeout: 15000,
+        timeout: 35000,
         stdio: "ignore",
       });
     } catch {}
@@ -122,7 +122,7 @@ try {
 } finally {
   try {
     if (ctlStarted) {
-      await runFile(pgCtl, stopArgs, { windowsHide: true, timeout: 15000 });
+      await runFile(pgCtl, stopArgs, { windowsHide: true, timeout: 35000 });
       ctlStarted = false;
     } else if (
       pg.process &&

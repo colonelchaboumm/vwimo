@@ -2,7 +2,7 @@ from datetime import date, datetime, timezone
 from decimal import Decimal
 from uuid import uuid4
 
-from sqlalchemy import Boolean, CheckConstraint, Date, DateTime, ForeignKey, Index, Integer, JSON, Numeric, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, CheckConstraint, Date, DateTime, ForeignKey, Index, Integer, JSON, Numeric, String, Text, UniqueConstraint, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -294,3 +294,86 @@ class AITurn(Base):
     status: Mapped[str] = mapped_column(String(20), default="running")
     context: Mapped[dict] = mapped_column(JSON)
     error: Mapped[str] = mapped_column(String(500), default="")
+
+
+class SaleTransaction(Entity, Base):
+    __tablename__ = "sale_transactions"
+    __table_args__ = (CheckConstraint("sale_price > 0", name="transaction_price"),
+        CheckConstraint("stage IN ('marketing','visits','offer','accepted','file','compromise','conditions','financing','signed','cancelled')", name="transaction_stage"),
+        Index("uq_transaction_active_mandate", "mandate_id", unique=True, sqlite_where=text("stage != 'cancelled'"), postgresql_where=text("stage != 'cancelled'")))
+    reference: Mapped[str] = mapped_column(String(40), unique=True)
+    mandate_id: Mapped[str] = mapped_column(ForeignKey("mandates.id", ondelete="RESTRICT"), index=True)
+    buyer_id: Mapped[str | None] = mapped_column(ForeignKey("contacts.id", ondelete="RESTRICT"), index=True)
+    stage: Mapped[str] = mapped_column(String(20), default="marketing", index=True)
+    sale_price: Mapped[Decimal] = mapped_column(Numeric(14, 2))
+    notary: Mapped[str] = mapped_column(String(180), default="")
+    offer_on: Mapped[date | None] = mapped_column(Date)
+    compromise_on: Mapped[date | None] = mapped_column(Date)
+    expected_deed_on: Mapped[date | None] = mapped_column(Date, index=True)
+    deed_on: Mapped[date | None] = mapped_column(Date)
+    financing: Mapped[str] = mapped_column(String(20), default="unknown")
+    conditions: Mapped[str] = mapped_column(Text, default="")
+    checklist: Mapped[list] = mapped_column(JSON, default=list)
+    notes: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class CommissionPlan(Entity, Base):
+    __tablename__ = "commission_plans"
+    __table_args__ = (CheckConstraint("method IN ('marginal','global')", name="commission_method"),
+                     CheckConstraint("period IN ('year','month')", name="commission_period"))
+    name: Mapped[str] = mapped_column(String(180))
+    partner: Mapped[str] = mapped_column(String(180))
+    base_label: Mapped[str] = mapped_column(String(180))
+    amount_basis: Mapped[str] = mapped_column(String(20), default="contract")
+    method: Mapped[str] = mapped_column(String(20))
+    period: Mapped[str] = mapped_column(String(20))
+    effective_from: Mapped[date] = mapped_column(Date)
+    effective_to: Mapped[date | None] = mapped_column(Date)
+    opening_base: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=0)
+    opening_on: Mapped[date | None] = mapped_column(Date)
+    tiers: Mapped[list] = mapped_column(JSON)
+    notes: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class Income(Entity, Base):
+    __tablename__ = "incomes"
+    __table_args__ = (CheckConstraint("category IN ('sale','mandate','broker','moving','referral','other')", name="income_category"),
+                     CheckConstraint("status IN ('forecast','acquired','cancelled')", name="income_status"),
+                     CheckConstraint("amount_basis IN ('ht','ttc','contract')", name="income_basis"),
+                     CheckConstraint("base_amount >= 0 AND amount >= 0", name="income_amounts"),
+                     Index("ix_income_plan_earned", "plan_id", "earned_on"))
+    reference: Mapped[str] = mapped_column(String(40), unique=True)
+    title: Mapped[str] = mapped_column(String(180))
+    category: Mapped[str] = mapped_column(String(20))
+    partner: Mapped[str] = mapped_column(String(180))
+    transaction_id: Mapped[str | None] = mapped_column(ForeignKey("sale_transactions.id", ondelete="RESTRICT"), index=True)
+    contact_id: Mapped[str | None] = mapped_column(ForeignKey("contacts.id", ondelete="RESTRICT"), index=True)
+    plan_id: Mapped[str | None] = mapped_column(ForeignKey("commission_plans.id", ondelete="RESTRICT"))
+    base_amount: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=0)
+    fixed_amount: Mapped[Decimal | None] = mapped_column(Numeric(14, 2))
+    adjustment: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=0)
+    adjustment_reason: Mapped[str] = mapped_column(String(1000), default="")
+    amount_basis: Mapped[str] = mapped_column(String(20), default="contract")
+    amount: Mapped[Decimal] = mapped_column(Numeric(14, 2))
+    expected_on: Mapped[date] = mapped_column(Date, index=True)
+    earned_on: Mapped[date | None] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(String(20), default="forecast", index=True)
+    calculation: Mapped[dict] = mapped_column(JSON)
+    justification: Mapped[str] = mapped_column(Text, default="")
+    notes: Mapped[str] = mapped_column(Text, default="")
+    acquisition_request_id: Mapped[str | None] = mapped_column(String(36), unique=True)
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class IncomePayment(Entity, Base):
+    __tablename__ = "income_payments"
+    __table_args__ = (CheckConstraint("amount > 0", name="payment_positive"), Index("ix_income_payment_date", "income_id", "paid_on"))
+    income_id: Mapped[str] = mapped_column(ForeignKey("incomes.id", ondelete="RESTRICT"))
+    paid_on: Mapped[date] = mapped_column(Date)
+    amount: Mapped[Decimal] = mapped_column(Numeric(14, 2))
+    reference: Mapped[str] = mapped_column(String(180))

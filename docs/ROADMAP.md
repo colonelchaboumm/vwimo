@@ -34,6 +34,10 @@ Le drapeau général de prospection est enregistré dès la phase 1, mais aucun 
 
 ## Phase 4 — finance et pilotage
 
-Transactions, commissions et contrats de rétrocession configurables, facturation adaptée au statut réel, courtage, recommandations, newsletters, retouche photo avec conservation des originaux, automatisations avancées et statistiques.
+Livré en 0.8 : dossiers de transaction associés aux mandats, étapes, acquéreur, notaire, dates, financement, conditions, checklist et consultation des documents liés. Les changements restent déclaratifs et indépendants du statut du mandat.
+
+Commissions et revenus par origine : vente, entrée de mandat, courtage, déménagement, recommandation et autre. Montant fixe ou barème contractuel figé, taux configurables, tranches marginales ou taux global avec rattrapage, cumul par mois/année civile et reprise antérieure explicite. Prévisions enregistrées, recalcul confirmé avant validation, historique financier conservé, encaissements partiels déclarés, reste dû et export CSV. Aucun taux utilisateur fictif prérempli.
+
+À poursuivre : facturation adaptée au régime de TVA et aux mentions professionnelles réelles, corrections/avoirs sur revenus validés, rapprochement bancaire et suivi des remboursements, annuaires de partenaires, campagnes/newsletters, retouche photo avec conservation des originaux, automatisations avancées et statistiques transversales. Le statut de micro-entrepreneur ne suffit pas à déduire un régime de TVA ou une exonération générale ; la version 0.8 ne calcule ni impôt ni cotisations.
 
 Aucune règle fiscale ou rémunération fictive n’est prise pour une condition réelle de l’utilisateur. Les dates réglementaires et contraintes de services externes devront être vérifiées au moment de l’implémentation.

@@ -110,6 +110,20 @@ Les notifications reflètent les rappels métier, avec les échéances urgentes 
 
 Dans **Paramètres**, le bouton d’arrêt enregistre la désactivation de la préférence générale de prospection. **Cette version n’a aucun moteur d’envoi : même avec la préférence activée, aucun message ne peut partir.**
 
+## Transactions et commissions (0.8)
+
+Dans **Transactions**, créez un dossier depuis un mandat existant, renseignez acquéreur, prix retenu, notaire, dates et étapes. Un seul dossier non annulé est accepté par mandat. Pour déclarer une vente signée, renseignez l’acte effectué, à une date non future. Les pièces cochées et le financement sont vos déclarations ; aucun contenu documentaire n’est contrôlé automatiquement. Le bouton documents retrouve les fichiers du mandat, du vendeur et de l’acquéreur. Le statut du mandat n’est pas modifié automatiquement.
+
+Dans **Commissions & revenus**, enregistrez séparément chaque part vente, entrée de mandat, courtage, déménagement, recommandation ou autre rémunération. Vous pouvez lier plusieurs revenus distincts au même dossier. Aucun pourcentage n’est supposé : saisissez un montant fixe ou créez un **barème contractuel** depuis vos conditions réelles (propriétaire/administrateur uniquement).
+
+Le barème précise l’assiette contractuelle, la présentation du montant (HT, TTC ou contractuel sans TVA déterminée), les dates d’application et la période du cumul. En méthode **par tranche**, chaque part reçoit son taux. En méthode **globale avec rattrapage**, le revenu correspond aux droits arrondis sur le cumul après opération moins ceux avant opération ; le franchissement d’un seuil peut donc produire une rémunération supérieure à l’assiette de la nouvelle opération. Le cumul concerne les assiettes des revenus validés avec ce barème, jamais vos seuils fiscaux. Une reprise antérieure chiffrée s’applique seulement à la période de sa date. Un nouveau barème ne reprend aucun cumul implicitement.
+
+Le calcul prévisionnel est conservé à l’enregistrement ; les autres prévisions ne sont pas empilées automatiquement et les validations ultérieures peuvent changer le cumul. Pour valider, ouvrez **Calcul et encaissements**, indiquez la date réelle, recalculez puis confirmez le montant et votre droit à rémunération. Les validations d’un barème doivent respecter l’ordre des dates dans chaque période. Si le cumul change entre calcul et confirmation, recalculez. Après validation, le calcul et les données financières sont figés : les corrections/avoirs seront ajoutés dans une prochaine livraison. Une prévision peut être modifiée ou annulée explicitement.
+
+Déclarez ensuite les encaissements reçus, partiels ou complets, avec date et référence. Le total ne peut pas dépasser le revenu validé ; un même enregistrement réessayé après perte de réponse n’ajoute pas un second versement. Aucun mouvement bancaire n’est déclenché. Le tableau distingue prévisions de l’année, revenus validés de l’année, encaissements de l’année et reste dû toutes années. Les bases HT, TTC et contractuelles ne sont pas additionnées. L’export CSV contient tous les statuts et toutes les années (2 000 lignes maximum).
+
+Le statut de micro-entrepreneur ne détermine pas à lui seul la TVA, l’impôt ou les cotisations. Aucun de ces montants ni seuils n’est calculé ici ; aucune facture ni déclaration officielle n’est émise. Ce suivi déclaratif ne remplace pas vos justificatifs et obligations comptables.
+
 ## Erreurs et données
 
 Une erreur de validation conserve le formulaire ouvert avec son message. Les écritures sont enregistrées au clic sur **Enregistrer**, pas à chaque frappe. Fermer un formulaire modifié demande de confirmer l’abandon. Changer de profil conserve temporairement les critères saisis. En cas de conflit, un dossier modifié ailleurs ne peut pas être écrasé : copiez vos notes utiles, fermez le formulaire, actualisez et rouvrez-le. Si la confirmation du serveur est perdue, vérifiez la liste avant de recommencer pour éviter un doublon.

@@ -92,6 +92,16 @@ Les autres entités du cahier des charges seront introduites avec les services q
 
 La vérification initiale du format n’est pas un antivirus. Un scan documentaire, les limites de requête au reverse proxy, la supervision et le chiffrement des volumes restent nécessaires avant hébergement de données réelles. Les journaux applicatifs ne sont pas un stockage d’audit immuable certifié.
 
+## Transactions et commissions (0.8)
+
+La migration `20261022_finance` ajoute `sale_transactions`, `commission_plans`, `incomes` et `income_payments`. Un index unique partiel SQLite/PostgreSQL interdit plusieurs transactions non annulées pour un mandat. Les documents sont retrouvés par liens existants, sans copie. Les clés étrangères sont indexées ; les listes sont paginées (40 éléments, maximum 100 par requête). Le sélecteur de transactions récentes est limité à 100 mais préserve les liens existants hors liste ; les barèmes sont limités à 500 et l’export CSV à 2 000 revenus.
+
+`commission_math.py` calcule avec Decimal et arrondi HALF_UP. Marginal : somme des tranches puis arrondi final. Global : différence des droits cumulés arrondis, permettant le rattrapage sans dérive des centimes. Les compteurs utilisent les assiettes des seuls revenus validés dans le même barème et la même période civile, avec reprise explicite éventuelle. Les prévisions stockent le dernier calcul ; elles ne réservent pas de cumul. Les calculs, périodes, taux et ajustements sont figés à validation. Aucun taux fiscal ni pourcentage de rémunération utilisateur n’est fourni par défaut.
+
+Un digest lie le devis au revenu/version/calcul. La confirmation exige un devis actuel ; le barème est conservé dans la session et son compteur de version est modifié dans la même transaction pour sérialiser les validations concurrentes. Les encaissements font évoluer la version du revenu ; le contrôle du total et l’insertion sont atomiques. Des UUID identifient les validations et versements réessayés après perte de réponse. Les revenus validés et les versements sont conservés ; aucune correction/avoir ni suppression financière n’est exposée. Les lecteurs consultent, les conseillers écrivent, seuls les administrateurs créent les barèmes.
+
+Le tableau agrège par HT/TTC/contractuel, séparément par dates prévisionnelles, de validation et d’encaissement ; le reste dû couvre toutes les années. Les valeurs ne constituent ni des factures ni des déclarations fiscales. Aucun accès bancaire ou envoi externe n’est implémenté.
+
 ## Radar, suivi et carte (0.7)
 
 `radar.py` et `radar_schemas.py` séparent les annonces déclarées du portefeuille commercial. La migration `20261022_radar` crée `radar_listings`, `radar_prices`, `prospects`, `prospect_activities` et `outlook_settings`. Les clés étrangères sont indexées ou uniques ; versions de dossiers, contraintes et transactions empêchent les écrasements concurrents et imports partiels. La clé canonique SHA-256 d’URL ignore fragments et paramètres utm, préserve les identifiants de requête et refuse un doublon exact. Aucune URL n’est récupérée par le backend.

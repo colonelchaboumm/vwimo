@@ -46,6 +46,8 @@ GRANT SELECT, INSERT, UPDATE ON ai_settings TO immo_app;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ai_conversations, ai_turns TO immo_app;
 GRANT SELECT, INSERT, UPDATE ON radar_listings, prospects, outlook_settings TO immo_app;
 GRANT SELECT, INSERT ON radar_prices, prospect_activities TO immo_app;
+GRANT SELECT, INSERT, UPDATE ON sale_transactions, commission_plans, incomes TO immo_app;
+GRANT SELECT, INSERT ON income_payments TO immo_app;
 ```
 
 Les UUID sont générés dans le backend ; aucune séquence métier n’est nécessaire. Le rôle d’administration conserve la création et la maintenance des comptes. Les droits seront revus à chaque ajout de tables.
@@ -94,6 +96,8 @@ Pour une sauvegarde strictement coordonnée, mettre l’API en maintenance penda
 L’outil SQLite refuse PostgreSQL : la procédure PostgreSQL est documentée, mais son orchestration de sauvegarde/restauration n’est pas automatisée dans cette livraison.
 
 ## Mise à jour
+
+La migration 0.8 `20261022_finance` ajoute transactions, barèmes contractuels, revenus et encaissements. Les sauvegardes SQLite les incluent avec le reste de la base. Les barèmes enregistrés et les revenus validés ne sont pas modifiables par l’interface ; aucune suppression financière ni régularisation/avoir n’est implémentée. Préserver les pièces contractuelles et vérifier les montants avant validation. Les encaissements sont des déclarations manuelles, sans accès bancaire.
 
 Les sauvegardes 0.7 incluent annonces radar, observations de prix, activités de prospection et configuration publique Outlook. Leur suppression/rétention automatique n’est pas implémentée. L’import CSV est local et ne valide pas les licences des données : conserver la preuve des droits nécessaires. Aucun portail n’est interrogé et aucune tâche d’envoi n’est installée.
 

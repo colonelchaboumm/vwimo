@@ -303,9 +303,74 @@ try {
       name: "Afficher le fond OpenStreetMap (connexion internet)",
     }),
   ).not.toBeChecked();
+  await page
+    .locator("nav")
+    .getByRole("button", { name: "Commissions & revenus", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Nouveau revenu", exact: true })
+    .click();
+  await page
+    .getByLabel("Référence du revenu", { exact: true })
+    .fill("REV-NATIVE");
+  await page
+    .getByLabel("Libellé du revenu", { exact: true })
+    .fill("Courtage fictif natif");
+  await page
+    .getByLabel("Origine de la rémunération", { exact: true })
+    .selectOption("broker");
+  await page
+    .getByLabel("Payeur / partenaire", { exact: true })
+    .fill("Partenaire fictif natif");
+  await page
+    .getByLabel("Montant fixe de rémunération (€)", { exact: true })
+    .fill("125.03");
+  await page
+    .getByLabel("Justification du droit à rémunération", { exact: true })
+    .fill("Prestation fictive confirmée pour le test natif.");
+  await page
+    .getByRole("button", { name: "Enregistrer la prévision", exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(
+    page.locator("article").filter({ hasText: "REV-NATIVE" }),
+  ).toContainText("125,03");
+  await page
+    .getByRole("button", { name: "Calcul et encaissements", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Recalculer avant validation", exact: true })
+    .click();
+  await page
+    .getByRole("checkbox", {
+      name: "Je confirme ce calcul et mon droit à rémunération à cette date.",
+      exact: true,
+    })
+    .check();
+  await page
+    .getByRole("button", { name: "Confirmer le revenu validé", exact: true })
+    .click();
+  await page.getByLabel("Montant encaissé (€)", { exact: true }).fill("25.01");
+  await page
+    .getByLabel("Référence / preuve de l’encaissement", { exact: true })
+    .fill("Virement fictif natif");
+  await page
+    .getByRole("button", {
+      name: "Enregistrer l’encaissement déclaré",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("dialog").locator(".prospect-stats"),
+  ).toContainText("100,02");
+  await expect(page.locator(".finance-payments li")).toHaveCount(1);
+  await page.screenshot({
+    path: "docs/screenshots/finance-webview2.png",
+    fullPage: true,
+  });
   assert.deepEqual(errors, []);
   console.log(
-    "WebView2 : compte, dossiers, agenda, PDF, Charlie, DPAPI, radar, prospection et carte locale réussis. Aucun appel OpenAI ni requête de tuile OSM.",
+    "WebView2 : compte, dossiers, agenda, PDF, Charlie, DPAPI, radar, prospection, carte, revenu et encaissement local réussis. Aucun appel OpenAI ni requête de tuile OSM.",
   );
 } catch (error) {
   console.error(error);
