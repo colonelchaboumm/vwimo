@@ -1,3 +1,15 @@
+# Livraison 0.9 — 22 octobre 2026
+
+- Backend : 129 tests réussis sur SQLite. La suite PostgreSQL initiale compte 127 réussis et 1 ignoré ; les neuf cas partenaires/pilotage sont revérifiés après le dernier correctif et le test SQLite supplémentaire de migration financière depuis 0.8 passe également. Les dix nouveaux cas couvrent annuaire, recherche littérale, archivage, autorisation avant mise en relation, snapshot conservé après retrait, suivi historique avec contact archivé, types de dossiers, dates/clôture, historique concurrent, droits lecteur, revenus liés, devis périmés, dates annuelles et passage de schéma avec revenus/versements existants.
+- Interface : 29 parcours réussis. Nouveau parcours complet partenaire → transmission refusée sans autorisation → autorisation déclarée → retrait conservant la trace initiale → revenu lié → pilotage sans duplication. Consultation lecteur et navigation des tableaux à 390 pixels vérifiées. Captures partenaires, historique et pilotage contrôlées visuellement.
+- Périmètres des chiffres : portefeuille actuel indépendant du filtre annuel ; ventes par date d’acte, moyenne sur les seules dates disponibles ; agenda au passage d’année Europe/Paris ; versement d’une année associé à un revenu validé l’année précédente ; bases HT/TTC/contractuelles séparées.
+- Conservation : la migration `20261022_partners` ajoute le lien des revenus sans modifier montants, versements ou références ; contrôle des clés étrangères et sauvegarde avant migration. L’aperçu local répond en version 0.9 après mise à niveau.
+- Windows/WebView2 : suite native réussie, avec création d’un partenaire et d’un dossier, historique consultable et pilotage alimenté par le backend embarqué. Compilation TypeScript/Vite, exécutable Tauri, installateur NSIS et signature updater générés.
+
+Les autorisations, transmissions, financements et résultats sont déclaratifs. Aucun envoi partenaire, agrément, droit à rémunération, facture, banque ou régime fiscal n’est vérifié automatiquement. L’installation sur machine vierge, le remplacement effectif par l’updater, les volumes importants et la politique d’effacement restent à vérifier ou compléter.
+
+---
+
 # Livraison 0.8 — 22 octobre 2026
 
 - Backend : 119 tests réussis sur SQLite ; 118 réussis et 1 ignoré sur PostgreSQL. Les 22 nouveaux cas couvrent calculs par tranche/global, franchissement de seuil, arrondis au centime, reprise et remise à zéro mensuelle/annuelle, dates, unicité du dossier par mandat, versions, preuve déclarée, confirmation liée au calcul, validations concurrentes, encaissements partiels/idempotents et dépassement concurrent refusé, export CSV sûr et droits lecteur.

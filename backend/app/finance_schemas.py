@@ -84,6 +84,7 @@ class IncomeInput(Input):
     partner: str = Field(min_length=2, max_length=180)
     transaction_id: str | None = Field(default=None, max_length=36)
     contact_id: str | None = Field(default=None, max_length=36)
+    referral_id: str | None = Field(default=None, max_length=36)
     plan_id: str | None = Field(default=None, max_length=36)
     base_amount: Decimal = Field(default=0, ge=0, le=999999999, decimal_places=2)
     fixed_amount: Decimal | None = Field(default=None, ge=0, le=999999999, decimal_places=2)

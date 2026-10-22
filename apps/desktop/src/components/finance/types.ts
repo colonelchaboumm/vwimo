@@ -43,6 +43,7 @@ export type Calculation = {
   base?: string;
   base_label?: string;
   plan_name?: string;
+  referral_reference?: string;
   period_start?: string;
   period_end_exclusive?: string;
   adjustment: string;
@@ -63,6 +64,7 @@ export type Income = {
   partner: string;
   transaction_id: string | null;
   contact_id: string | null;
+  referral_id: string | null;
   plan_id: string | null;
   base_amount: string;
   fixed_amount: string | null;

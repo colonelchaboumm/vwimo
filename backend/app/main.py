@@ -59,7 +59,7 @@ def create_app(settings: Settings | None = None):
         yield
         engine.dispose()
 
-    api = FastAPI(title="IMMO PILOT AI", version="0.8.0", lifespan=lifespan)
+    api = FastAPI(title="IMMO PILOT AI", version="0.9.0", lifespan=lifespan)
     api.state.sessions = sessions
     api.state.engine = engine
     api.add_middleware(BodyLimitMiddleware)
@@ -152,7 +152,7 @@ def create_app(settings: Settings | None = None):
     @api.get("/api/health")
     def health(db=Depends(database)):
         db.execute(text("SELECT 1"))
-        return {"status": "ok", "mode": settings.mode, "version": "0.8.0",
+        return {"status": "ok", "mode": settings.mode, "version": "0.9.0",
                 "setup_required": settings.mode == "local" and db.scalar(select(User.id).limit(1)) is None}
 
     @api.post("/api/auth/register-local", status_code=201)
@@ -446,4 +446,9 @@ def create_app(settings: Settings | None = None):
     from .finance import register_finance
     register_finance(api, database=database, user=user, writer=writer, audit=audit, find=find,
                      save=save, check_version=check_version, record=record)
+    from .partners import register_partners
+    register_partners(api, database=database, user=user, writer=writer, audit=audit, find=find,
+                      save=save, check_version=check_version, record=record)
+    from .pilotage import register_pilotage
+    register_pilotage(api, database=database, user=user)
     return api

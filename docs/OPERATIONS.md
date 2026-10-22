@@ -48,6 +48,8 @@ GRANT SELECT, INSERT, UPDATE ON radar_listings, prospects, outlook_settings TO i
 GRANT SELECT, INSERT ON radar_prices, prospect_activities TO immo_app;
 GRANT SELECT, INSERT, UPDATE ON sale_transactions, commission_plans, incomes TO immo_app;
 GRANT SELECT, INSERT ON income_payments TO immo_app;
+GRANT SELECT, INSERT, UPDATE ON partners, referrals TO immo_app;
+GRANT SELECT, INSERT ON referral_events TO immo_app;
 ```
 
 Les UUID sont générés dans le backend ; aucune séquence métier n’est nécessaire. Le rôle d’administration conserve la création et la maintenance des comptes. Les droits seront revus à chaque ajout de tables.
@@ -96,6 +98,8 @@ Pour une sauvegarde strictement coordonnée, mettre l’API en maintenance penda
 L’outil SQLite refuse PostgreSQL : la procédure PostgreSQL est documentée, mais son orchestration de sauvegarde/restauration n’est pas automatisée dans cette livraison.
 
 ## Mise à jour
+
+La migration 0.9 `20261022_partners` ajoute l’annuaire et les dossiers de mise en relation ainsi que le lien nullable des revenus. Une reconstruction SQLite de la table des revenus préserve les lignes et leurs versements ; un test vérifie le passage depuis la révision 0.8 avec des montants existants, les clés étrangères et la sauvegarde avant migration. Les autorisations et transmissions restent des déclarations de l’utilisateur, sans service d’envoi. Les snapshots et historiques contiennent des données personnelles et sont inclus dans les sauvegardes ; leur politique de rétention/effacement reste à implémenter.
 
 La migration 0.8 `20261022_finance` ajoute transactions, barèmes contractuels, revenus et encaissements. Les sauvegardes SQLite les incluent avec le reste de la base. Les barèmes enregistrés et les revenus validés ne sont pas modifiables par l’interface ; aucune suppression financière ni régularisation/avoir n’est implémentée. Préserver les pièces contractuelles et vérifier les montants avant validation. Les encaissements sont des déclarations manuelles, sans accès bancaire.
 

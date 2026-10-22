@@ -51,3 +51,28 @@ def test_desktop_migration_backed_up(tmp_path, monkeypatch, mode):
     with sqlite3.connect(database) as db:
         assert "version" in [row[1] for row in db.execute("PRAGMA table_info(contacts)")]
         assert db.execute("SELECT mode FROM installation").fetchone() == (mode,)
+
+
+def test_financial_records_survive_partner_migration(tmp_path, monkeypatch):
+    migrations = Path(__file__).resolve().parents[1] / "migrations"
+    monkeypatch.chdir(tmp_path)
+    data_dir = tmp_path / "desktop"
+    database = data_dir / "local.db"
+    settings = Settings(_env_file=None, mode='local', database_url='sqlite:///'+database.as_posix(), storage_dir=data_dir/'local-documents')
+    settings.validate_runtime()
+    config = Config()
+    config.set_main_option('script_location',str(migrations))
+    config.attributes['settings']=settings
+    command.upgrade(config,'20261022_finance')
+    with sqlite3.connect(database) as db:
+        db.execute("INSERT INTO installation (id,mode) VALUES (1,'local')")
+        db.execute("""INSERT INTO incomes (id,created_at,reference,title,category,partner,base_amount,fixed_amount,adjustment,adjustment_reason,amount_basis,amount,expected_on,earned_on,status,calculation,justification,notes,version)
+            VALUES ('income-before','2026-01-01','REV-AVANT','Revenu antérieur','broker','Partenaire déclaré',0,100.01,0,'','contract',100.01,'2026-01-01','2026-01-01','acquired','{}','Justification existante','',1)""")
+        db.execute("INSERT INTO income_payments (id,created_at,income_id,paid_on,amount,reference) VALUES ('payment-before','2026-01-01','income-before','2026-01-01',20.01,'Versement antérieur')")
+    prepare(data_dir,'migration-key')
+    assert len(list((data_dir/'backups').glob('*.zip')))==1
+    with sqlite3.connect(database) as db:
+        assert db.execute('SELECT reference,amount,referral_id FROM incomes').fetchone()==('REV-AVANT',100.01,None)
+        assert db.execute('SELECT income_id,amount FROM income_payments').fetchone()==('income-before',20.01)
+        assert db.execute('PRAGMA foreign_key_check').fetchall()==[]
+        assert 'ix_incomes_referral_id' in [row[1] for row in db.execute('PRAGMA index_list(incomes)')]

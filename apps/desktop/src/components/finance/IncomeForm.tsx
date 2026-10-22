@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { api } from "../../api";
 import type { Contact } from "../../types";
+import type { Referral } from "../partners/types";
 import { useFormGuard } from "../FormGuard";
 import { Field, useSubmitLock } from "../commercial/shared";
 import { Button } from "../ui/button";
@@ -19,6 +20,7 @@ export function IncomeForm({
   plans,
   transactions,
   contacts,
+  referrals,
   onClose,
   onSaved,
 }: {
@@ -26,6 +28,7 @@ export function IncomeForm({
   plans: Plan[];
   transactions: Transaction[];
   contacts: Contact[];
+  referrals: Referral[];
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -51,6 +54,7 @@ export function IncomeForm({
           partner,
           transaction_id: values.transaction_id || null,
           contact_id: values.contact_id || null,
+          referral_id: values.referral_id || null,
           fixed_amount: planId ? null : values.fixed_amount,
           base_amount: planId ? values.base_amount : "0",
         }),
@@ -173,6 +177,28 @@ export function IncomeForm({
                 {contacts.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </Field>
+          <Field label="Dossier de mise en relation lié (facultatif)">
+            {(id) => (
+              <select
+                id={id}
+                name="referral_id"
+                defaultValue={item?.referral_id || ""}
+              >
+                <option value="">Aucun dossier partenaire lié</option>
+                {item?.referral_id &&
+                  !referrals.some((r) => r.id === item.referral_id) && (
+                    <option value={item.referral_id}>
+                      Dossier partenaire lié hors liste
+                    </option>
+                  )}
+                {referrals.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.reference} · {r.title}
                   </option>
                 ))}
               </select>

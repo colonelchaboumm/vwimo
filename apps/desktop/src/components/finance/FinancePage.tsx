@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Download, Plus, RefreshCw } from "lucide-react";
 import { api, saveFile } from "../../api";
 import type { Contact } from "../../types";
+import type { Referral } from "../partners/types";
 import { dateText } from "../../lib/utils";
 import { financeMoney as money } from "./types";
 import { ResourceState, useEditing, useResource } from "../commercial/shared";
@@ -54,12 +55,16 @@ export function FinancePage({
     "/finance/summary?year=" + year,
   );
   const summaryData = summary.data;
+  const referrals = useResource<{ items: Referral[]; total: number }>(
+    "/referrals?limit=100",
+  );
   useEditing(!!editor || !!detail || !!planForm, onEditing);
   function refresh() {
     incomes.refresh();
     plans.refresh();
     summary.refresh();
     transactions.refresh();
+    referrals.refresh();
   }
   async function download() {
     setError("");
@@ -97,6 +102,8 @@ export function FinancePage({
               readonly ||
               plans.loading ||
               transactions.loading ||
+              referrals.loading ||
+              !!referrals.error ||
               !!plans.error ||
               !!transactions.error
             }
@@ -252,7 +259,12 @@ export function FinancePage({
                   {item.status === "forecast" && (
                     <Button
                       variant="ghost"
-                      disabled={readonly || !plans.data || !transactions.data}
+                      disabled={
+                        readonly ||
+                        !plans.data ||
+                        !transactions.data ||
+                        !referrals.data
+                      }
                       onClick={() => setEditor(item)}
                     >
                       Modifier la prévision
@@ -368,12 +380,18 @@ export function FinancePage({
           )}
         </>
       )}
-      {editor && plans.data && transactions.data && (
+      <ResourceState
+        error={referrals.error}
+        loading={referrals.loading}
+        retry={referrals.refresh}
+      />
+      {editor && plans.data && transactions.data && referrals.data && (
         <IncomeForm
           item={editor === "new" ? undefined : editor}
           plans={plans.data.items}
           transactions={transactions.data.items}
           contacts={contacts}
+          referrals={referrals.data.items}
           onClose={() => setEditor(null)}
           onSaved={() => {
             setEditor(null);

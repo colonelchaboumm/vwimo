@@ -12,7 +12,7 @@ from sqlalchemy.exc import IntegrityError
 
 from .commission_math import calculate, cents, period_bounds
 from .finance_schemas import AcquisitionInput, IncomeInput, PaymentInput, PlanInput, TransactionInput
-from .models import CommissionPlan, Contact, Document, Income, IncomePayment, Mandate, SaleTransaction
+from .models import CommissionPlan, Contact, Document, Income, IncomePayment, Mandate, SaleTransaction, Referral
 from .radar_schemas import today
 
 
@@ -101,6 +101,12 @@ def register_finance(api, *, database, user, writer, audit, find, save, check_ve
 
     def quotation(db, row, day, *, acquiring=False):
         plan = find(db, CommissionPlan, row.plan_id) if row.plan_id else None
+        referral = find(db, Referral, row.referral_id) if row.referral_id else None
+        if referral:
+            if row.contact_id and row.contact_id != referral.contact_id:
+                raise HTTPException(422, 'Le contact du revenu diffère du dossier de mise en relation. Corrigez la prévision.')
+            if row.transaction_id and referral.transaction_id and row.transaction_id != referral.transaction_id:
+                raise HTTPException(422, 'La transaction du revenu diffère du dossier de mise en relation. Corrigez la prévision.')
         if acquiring:
             if not date(1900, 1, 1) <= day <= date(2100, 12, 31): raise HTTPException(422, "La date doit être comprise entre 1900 et 2100.")
             if day > today(): raise HTTPException(422, "La validation d’un revenu ne peut pas être future.")
@@ -128,11 +134,19 @@ def register_finance(api, *, database, user, writer, audit, find, save, check_ve
             if not 0 <= amount <= Decimal('999999999'): raise HTTPException(422, "Le montant après ajustement est hors limites.")
             calculation = {"method": "fixed", "fixed_amount": str(row.fixed_amount), "adjustment": str(row.adjustment), "amount": str(amount)}
         calculation.update({"date": str(day), "amount_basis": row.amount_basis, "adjustment_reason": row.adjustment_reason})
+        if referral:
+            calculation.update({'referral_reference':referral.reference,'referral_version':referral.version})
         snapshot = {"income_id": row.id, "income_version": row.version, "calculation": calculation}
         digest = hashlib.sha256(json.dumps(snapshot, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
         return {"calculation": calculation, "digest": digest}
 
     def apply_income(db, row, data):
+        if data.referral_id:
+            referral = find(db, Referral, data.referral_id)
+            if data.contact_id and data.contact_id != referral.contact_id:
+                raise HTTPException(422, 'Le contact du revenu doit correspondre au dossier de mise en relation lié.')
+            if data.transaction_id and referral.transaction_id and data.transaction_id != referral.transaction_id:
+                raise HTTPException(422, 'La transaction du revenu diffère de celle du dossier lié.')
         if data.transaction_id: find(db, SaleTransaction, data.transaction_id)
         if data.contact_id:
             contact = find(db, Contact, data.contact_id)
@@ -191,8 +205,12 @@ def register_finance(api, *, database, user, writer, audit, find, save, check_ve
         # Garder une référence forte : le cache d'identité SQLAlchemy est faible.
         # Le compteur utilisé par le devis doit rester celui modifié à la validation.
         plan = find(db, CommissionPlan, row.plan_id) if row.plan_id else None
+        referral = find(db, Referral, row.referral_id) if row.referral_id else None
         value = quotation(db, row, data.earned_on, acquiring=True)
         if value['digest'] != data.digest: raise HTTPException(409, "Le calcul ou le cumul a changé. Recalculez et confirmez le nouveau montant.")
+        if referral:
+            # Empêche la modification simultanée du contexte d'un revenu en cours de validation.
+            referral.version += 1
         if plan:
             plan.version += 1  # Sérialise les validations partageant le même compteur contractuel.
         row.calculation, row.amount = value['calculation'], Decimal(value['calculation']['amount'])

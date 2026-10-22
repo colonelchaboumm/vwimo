@@ -4,7 +4,7 @@
   "overrides": {
     "@mapbox/jsonlint-lines-primitives": "2.0.2"
   },
-  "version": "0.8.0",
+  "version": "0.9.0",
   "workspaces": [
     "apps/desktop"
   ],

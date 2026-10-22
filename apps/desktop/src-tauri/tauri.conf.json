@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "IMMO PILOT AI",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "identifier": "fr.immopilot.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "title": "IMMO PILOT AI",
-        "userAgent": "IMMO-PILOT-AI/0.8.0 (+https://github.com/colonelchaboumm/vwimo)",
+        "userAgent": "IMMO-PILOT-AI/0.9.0 (+https://github.com/colonelchaboumm/vwimo)",
         "width": 1440,
         "height": 980,
         "minWidth": 960,

@@ -62,6 +62,9 @@ import { PropertyMapPage } from "./components/radar/PropertyMapPage";
 import { OutlookSetup } from "./components/OutlookSetup";
 import { TransactionsPage } from "./components/finance/TransactionsPage";
 import { FinancePage } from "./components/finance/FinancePage";
+import { PartnersPage } from "./components/partners/PartnersPage";
+import { StatisticsPage } from "./components/partners/StatisticsPage";
+import "./components/partners/partners.css";
 import "./components/finance/finance.css";
 import "./components/radar/radar.css";
 import { Button } from "./components/ui/button";
@@ -120,7 +123,6 @@ const navigation = [
         id: "referrals",
         label: "Courtage & recommandations",
         icon: Users,
-        phase: 4,
       },
       {
         id: "marketing",
@@ -151,6 +153,7 @@ const pageNames: Record<string, string> = {
   map: "Carte immobilière",
   transactions: "Transactions",
   finance: "Commissions & revenus",
+  referrals: "Courtage & recommandations",
 };
 type Editor =
   | { type: "contact"; item?: Contact; kind?: string }
@@ -258,7 +261,7 @@ function Login({
             Annecy & Grand Annecy
           </div>
         </div>
-        <small>IMMO PILOT AI · Version 0.8 · Votre activité, réunie</small>
+        <small>IMMO PILOT AI · Version 0.9 · Votre activité, réunie</small>
       </div>
       <div className="login-form-wrap">
         <div className="login-form">
@@ -976,6 +979,16 @@ export default function App() {
                 />
               )}
               {page === "map" && <PropertyMapPage />}
+              {page === "referrals" && (
+                <PartnersPage
+                  contacts={data.contacts}
+                  readonly={readonly}
+                  onEditing={setCommercialEditing}
+                  onChanged={() => {
+                    void reload();
+                  }}
+                />
+              )}
               {page === "transactions" && (
                 <TransactionsPage
                   contacts={data.contacts}
@@ -1385,46 +1398,7 @@ export default function App() {
                   </div>
                 </>
               )}
-              {page === "statistics" && (
-                <>
-                  <PageHeading
-                    eyebrow="PILOTAGE"
-                    title="Vos chiffres, en perspective"
-                    description="Indicateurs calculés sur les dossiers enregistrés. Aucun revenu encaissé n’est estimé."
-                  />
-                  <div className="stats-grid">
-                    {Object.entries(data.dashboard.status_counts).map(
-                      ([k, v]) => (
-                        <div className="panel statistic" key={k}>
-                          <span>{statuses[k]}</span>
-                          <strong>{v}</strong>
-                          <div className="progress-track">
-                            <div
-                              style={{
-                                width: `${(v / Math.max(data.mandates.length, 1)) * 100}%`,
-                              }}
-                            />
-                          </div>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                  <section className="panel info-panel">
-                    <h2>Ce qui est mesuré aujourd’hui</h2>
-                    <p>
-                      {data.contacts.length} contacts actifs,{" "}
-                      {data.mandates.length} mandats et {data.documents.length}{" "}
-                      documents enregistrés.
-                    </p>
-                    <p>
-                      Le suivi des visites, des transactions, des encaissements
-                      et des taux de conversion sera ajouté avec les modules
-                      correspondants. Les montants des mandats ne sont pas
-                      assimilés à des ventes réalisées.
-                    </p>
-                  </section>
-                </>
-              )}
+              {page === "statistics" && <StatisticsPage />}
               {page === "settings" && (
                 <>
                   <PageHeading
@@ -1460,7 +1434,7 @@ export default function App() {
                         <dt>Fuseau horaire</dt>
                         <dd>Europe/Paris</dd>
                         <dt>Version</dt>
-                        <dd>0.8.0 · Transactions et commissions</dd>
+                        <dd>0.9.0 · Partenaires et pilotage</dd>
                       </dl>
                       <p>
                         {account.mode === "local"
@@ -1625,7 +1599,7 @@ export default function App() {
                   : "Service indisponible"}
           </span>
           <span>
-            IMMO PILOT AI <b>0.8</b>
+            IMMO PILOT AI <b>0.9</b>
           </span>
         </footer>
       </div>

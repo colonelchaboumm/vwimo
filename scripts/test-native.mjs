@@ -368,9 +368,83 @@ try {
     path: "docs/screenshots/finance-webview2.png",
     fullPage: true,
   });
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Fermer", exact: true })
+    .click();
+  await page
+    .locator("nav")
+    .getByRole("button", { name: "Courtage & recommandations", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Annuaire partenaires", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Nouveau partenaire", exact: true })
+    .click();
+  await page
+    .getByLabel("Nom / société du partenaire", { exact: true })
+    .fill("Partenaire fictif natif");
+  await page
+    .getByLabel("Type de partenaire", { exact: true })
+    .selectOption("moving");
+  await page
+    .getByRole("button", { name: "Enregistrer le partenaire", exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Créer une mise en relation", exact: true })
+    .click();
+  await page
+    .getByLabel("Référence du dossier partenaire", { exact: true })
+    .fill("APP-NATIVE");
+  await page
+    .getByLabel("Libellé de la mise en relation", { exact: true })
+    .fill("Service fictif natif");
+  await page
+    .getByLabel("Type de dossier partenaire", { exact: true })
+    .selectOption("service");
+  await page
+    .getByLabel("Contact recommandé / acquéreur", { exact: true })
+    .selectOption({ label: "Vendeur natif WebView2" });
+  await page
+    .getByLabel("Origine de la recommandation", { exact: true })
+    .fill("Demande fictive native");
+  await page
+    .getByLabel("Projet / besoin du client", { exact: true })
+    .fill("Déménagement fictif natif");
+  await page
+    .getByRole("button", {
+      name: "Enregistrer le dossier partenaire",
+      exact: true,
+    })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Mises en relation", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Historique et revenus", exact: true })
+    .click();
+  await expect(page.locator(".partner-history li")).toHaveCount(1);
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Fermer", exact: true })
+    .click();
+  await page
+    .locator("nav")
+    .getByRole("button", { name: "Statistiques", exact: true })
+    .click();
+  await expect(
+    page.getByRole("region", { name: "Revenus mensuels", exact: true }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "docs/screenshots/pilotage-webview2.png",
+    fullPage: true,
+  });
   assert.deepEqual(errors, []);
   console.log(
-    "WebView2 : compte, dossiers, agenda, PDF, Charlie, DPAPI, radar, prospection, carte, revenu et encaissement local réussis. Aucun appel OpenAI ni requête de tuile OSM.",
+    "WebView2 : compte, dossiers, agenda, PDF, Charlie, DPAPI, radar, carte, finance, partenaires et pilotage réussis. Aucun appel OpenAI ni requête de tuile OSM.",
   );
 } catch (error) {
   console.error(error);

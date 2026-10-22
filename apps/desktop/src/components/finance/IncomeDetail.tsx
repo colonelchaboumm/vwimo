@@ -28,6 +28,9 @@ export function CalculationView({ value }: { value: Calculation }) {
         {value.plan_name || "Montant fixe saisi"}
         {value.base_label ? " · " + value.base_label : ""}
       </p>
+      {value.referral_reference && (
+        <p>Dossier partenaire : {value.referral_reference}</p>
+      )}
       {value.cumulative_before !== undefined && (
         <p>
           Cumul des assiettes avant : {money(value.cumulative_before)}

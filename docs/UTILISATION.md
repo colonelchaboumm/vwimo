@@ -124,6 +124,24 @@ Déclarez ensuite les encaissements reçus, partiels ou complets, avec date et r
 
 Le statut de micro-entrepreneur ne détermine pas à lui seul la TVA, l’impôt ou les cotisations. Aucun de ces montants ni seuils n’est calculé ici ; aucune facture ni déclaration officielle n’est émise. Ce suivi déclaratif ne remplace pas vos justificatifs et obligations comptables.
 
+## Courtage, recommandations et partenaires (0.9)
+
+Dans **Courtage & recommandations**, ouvrez **Annuaire partenaires**, puis ajoutez vos courtiers, services de déménagement, agences/apporteurs, notaires ou autres prestataires. Les coordonnées, l’interlocuteur et les conditions sont saisis par vos soins. L’outil ne vérifie pas les agréments ou les conditions d’exercice. Un partenaire peut être archivé puis réactivé ; ses dossiers restent consultables. La recherche porte sur son nom, sa ville et son interlocuteur.
+
+Créez une mise en relation depuis la fiche partenaire ou le bouton **Nouveau dossier partenaire**. Choisissez un contact, le type de dossier, l’origine, le besoin et éventuellement une transaction. Un dossier de courtage nécessite un acquéreur et un partenaire courtier. L’étape, le financement, la prochaine action et le résultat sont déclarés manuellement. Les échéances à examiner sont signalées sans envoi ni relance automatique ; un refus/retrait suspend ce signalement.
+
+Pour enregistrer une mise en relation déjà effectuée hors de l’outil, indiquez sa date, une autorisation client datée au plus tard ce jour et une justification (10 caractères minimum). L’outil conserve la trace de cette déclaration ; il n’envoie aucune coordonnée et ne confirme pas la validité du justificatif. Après transmission, les liens, l’origine et les dates sont conservés. Le suivi, le résultat et un retrait d’autorisation peuvent évoluer ; la trace initiale demeure visible dans **Historique et revenus**. Un résultat réussi, sans suite ou annulé demande un motif documenté.
+
+Dans **Commissions & revenus**, une prévision peut être associée à un dossier via **Dossier de mise en relation lié**. Les 100 dossiers les plus récents sont proposés ; les liens existants hors liste sont conservés. Si un contact et une transaction sont aussi renseignés, ils doivent correspondre au dossier lié. Les rémunérations ne sont pas créées automatiquement par une étape « Réussi ». La consultation du dossier affiche les prévisions, revenus validés et encaissements liés sans les dupliquer. Les conditions et la validité de la rémunération restent à vérifier avant validation.
+
+## Pilotage annuel (0.9)
+
+La page **Statistiques** distingue les événements de l’année et le portefeuille actuel toutes années. Les ventes sont sélectionnées par date d’acte effectuée avec étape actuelle « Vente signée ». Le volume des prix de vente n’est pas votre revenu. Le délai moyen compromis-acte est accompagné du nombre de ventes disposant des deux dates ; sans échantillon, il est indiqué non calculable.
+
+Le journal compte les actions déclarées dans l’année à Paris. L’agenda compte les rendez-vous selon leur date de début, sans affirmer qu’ils ont eu lieu. Le nombre de dossiers partenaires ouverts utilise leur date d’ouverture saisie. Les stocks de contacts/partenaires actifs et les répartitions actuelles des mandats, transactions et mises en relation ne sont pas filtrés par l’année.
+
+Choisissez ensuite une base contractuelle, HT ou TTC pour consulter les revenus par mois et par origine. Prévisions : date prévue de règlement et calcul conservé ; validés : date de validation ; encaissements : date du versement, même si le revenu appartient à une année antérieure. Ces colonnes se lisent séparément et ne s’additionnent pas. À 390 pixels, les tableaux se parcourent horizontalement à l’intérieur de leur cadre. Aucun taux de conversion causal, facture ou déclaration fiscale n’en découle.
+
 ## Erreurs et données
 
 Une erreur de validation conserve le formulaire ouvert avec son message. Les écritures sont enregistrées au clic sur **Enregistrer**, pas à chaque frappe. Fermer un formulaire modifié demande de confirmer l’abandon. Changer de profil conserve temporairement les critères saisis. En cas de conflit, un dossier modifié ailleurs ne peut pas être écrasé : copiez vos notes utiles, fermez le formulaire, actualisez et rouvrez-le. Si la confirmation du serveur est perdue, vérifiez la liste avant de recommencer pour éviter un doublon.

@@ -352,6 +352,7 @@ class Income(Entity, Base):
     partner: Mapped[str] = mapped_column(String(180))
     transaction_id: Mapped[str | None] = mapped_column(ForeignKey("sale_transactions.id", ondelete="RESTRICT"), index=True)
     contact_id: Mapped[str | None] = mapped_column(ForeignKey("contacts.id", ondelete="RESTRICT"), index=True)
+    referral_id: Mapped[str | None] = mapped_column(ForeignKey("referrals.id", ondelete="RESTRICT"), index=True)
     plan_id: Mapped[str | None] = mapped_column(ForeignKey("commission_plans.id", ondelete="RESTRICT"))
     base_amount: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=0)
     fixed_amount: Mapped[Decimal | None] = mapped_column(Numeric(14, 2))
@@ -377,3 +378,58 @@ class IncomePayment(Entity, Base):
     paid_on: Mapped[date] = mapped_column(Date)
     amount: Mapped[Decimal] = mapped_column(Numeric(14, 2))
     reference: Mapped[str] = mapped_column(String(180))
+
+
+class Partner(Entity, Base):
+    __tablename__ = "partners"
+    __table_args__ = (CheckConstraint("kind IN ('broker','moving','agency','notary','other')", name="partner_kind"),)
+    name: Mapped[str] = mapped_column(String(180), index=True)
+    kind: Mapped[str] = mapped_column(String(20), index=True)
+    representative: Mapped[str] = mapped_column(String(180), default="")
+    email: Mapped[str | None] = mapped_column(String(254))
+    phone: Mapped[str] = mapped_column(String(30), default="")
+    city: Mapped[str] = mapped_column(String(100), default="")
+    agreement: Mapped[str] = mapped_column(Text, default="")
+    notes: Mapped[str] = mapped_column(Text, default="")
+    archived: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class Referral(Entity, Base):
+    __tablename__ = "referrals"
+    __table_args__ = (
+        CheckConstraint("kind IN ('broker','referral','service')", name="referral_kind"),
+        CheckConstraint("stage IN ('draft','introduced','in_progress','completed','unsuccessful','cancelled')", name="referral_stage"),
+        CheckConstraint("permission IN ('unknown','granted','refused','withdrawn')", name="referral_permission"),
+        CheckConstraint("financing IN ('unknown','requested','approved','refused')", name="referral_financing"),
+    )
+    reference: Mapped[str] = mapped_column(String(40), unique=True)
+    title: Mapped[str] = mapped_column(String(180))
+    kind: Mapped[str] = mapped_column(String(20), index=True)
+    partner_id: Mapped[str] = mapped_column(ForeignKey("partners.id", ondelete="RESTRICT"), index=True)
+    contact_id: Mapped[str] = mapped_column(ForeignKey("contacts.id", ondelete="RESTRICT"), index=True)
+    transaction_id: Mapped[str | None] = mapped_column(ForeignKey("sale_transactions.id", ondelete="RESTRICT"), index=True)
+    source: Mapped[str] = mapped_column(String(180))
+    project: Mapped[str] = mapped_column(String(180))
+    introduced_on: Mapped[date] = mapped_column(Date, index=True)
+    transferred_on: Mapped[date | None] = mapped_column(Date, index=True)
+    permission: Mapped[str] = mapped_column(String(20), default="unknown")
+    permission_on: Mapped[date | None] = mapped_column(Date)
+    permission_note: Mapped[str] = mapped_column(String(1000), default="")
+    transmission: Mapped[dict | None] = mapped_column(JSON)
+    stage: Mapped[str] = mapped_column(String(20), default="draft", index=True)
+    financing: Mapped[str] = mapped_column(String(20), default="unknown")
+    outcome: Mapped[str] = mapped_column(String(1000), default="")
+    next_action_on: Mapped[date | None] = mapped_column(Date, index=True)
+    notes: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class ReferralEvent(Entity, Base):
+    __tablename__ = "referral_events"
+    __table_args__ = (Index("ix_referral_event_date", "referral_id", "created_at"),)
+    referral_id: Mapped[str] = mapped_column(ForeignKey("referrals.id", ondelete="RESTRICT"))
+    actor_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"), index=True)
+    changes: Mapped[dict] = mapped_column(JSON)
