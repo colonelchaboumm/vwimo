@@ -52,7 +52,19 @@ La suggestion de fourchette utilise uniquement le type choisi dans **Base de ré
 
 Rédiger l’analyse et la stratégie, puis enregistrer. Le dossier peut passer de brouillon à présentée, acceptée ou archivée. **Rapport PDF** génère localement un document avec la fourchette finale, les caractéristiques, les comparables et sources déclarées, l’analyse et les limites de méthode. Les données restent disponibles après reconnexion et dans les sauvegardes SQLite. La génération ne dépend ni d’OpenAI ni d’un service hébergé.
 
-## Documents
+## Charlie
+
+Ouvrir **Charlie**, puis **Nouvelle conversation**. Choisir un briefing, un contact, un mandat, une estimation ou les rapprochements d’un acquéreur. **Voir le contexte utilisé** affiche les champs utilisés ; vérifier aussi les notes libres, qui peuvent contenir des informations personnelles. Les coordonnées e-mail/téléphone des contacts et le contenu des documents ne sont pas inclus. Le contexte est actualisé au retour sur cette page.
+
+Le moteur **Local · règles métier** fonctionne sans connexion externe et sans modèle d’IA : il prépare des synthèses et des modèles de brouillons à partir des champs enregistrés. Il ne répond pas librement comme un modèle génératif. Les conversations sont conservées dans la base, accessibles seulement à leur utilisateur ; leur suppression demande une confirmation. Un brouillon non envoyé reste disponible pendant la navigation, mais pas après fermeture ou rechargement.
+
+Pour une génération par OpenAI, ouvrir **Configurer OpenAI**, saisir votre clé API, choisir le modèle, activer la connexion puis enregistrer. Sous Windows, la clé enregistrée est chiffrée avec DPAPI pour votre profil Windows. **Tester la connexion (appel API)** effectue une véritable requête facturable sans données de dossier ; une configuration enregistrée seule ne prouve pas que la connexion fonctionne. L’accès à l’API dépend de votre propre projet OpenAI.
+
+Choisir ensuite le moteur OpenAI et confirmer la transmission avant chaque demande. Seuls le message courant et le contexte affiché sont transmis ; les échanges précédents restent locaux et ne sont pas envoyés. Les requêtes utilisent `store: false`, sans garantie de suppression de tous les journaux du fournisseur : consulter [sa politique de conservation](https://developers.openai.com/api/docs/guides/your-data). Une erreur ne déclenche aucun remplacement silencieux par le moteur local.
+
+Charlie reste en lecture seule : aucun dossier n’est modifié, aucun e-mail envoyé, aucune annonce publiée. Relire et compléter chaque brouillon avant utilisation. Les tests de livraison simulent les réponses OpenAI ; la connexion avec votre propre clé reste à vérifier dans l’application.
+
+## Importer des documents
 
 Choisir **Ajouter un document**, puis un fichier et sa catégorie. Associer éventuellement un contact et/ou un mandat. Les formats pris en charge sont PDF, DOCX, XLSX, PNG et JPEG, dans la limite de 15 Mo.
 
@@ -62,7 +74,7 @@ Le téléchargement nécessite une session valide. Une empreinte d’intégrité
 
 `Ctrl+K` place le curseur dans la recherche globale. Elle recherche les contacts, les mandats, les adresses saisies et les noms de fichiers déjà chargés. L’icône lune/soleil change le thème, conservé sur cet appareil.
 
-Les notifications reflètent les rappels métier, avec les échéances urgentes en premier. Les modules à venir sont regroupés dans **Prochaines fonctionnalités**. Charlie affiche l’état de l’intégration ; il ne répond pas encore à des questions. Les filtres et tris propres à chaque liste sont conservés pendant la connexion.
+Les notifications reflètent les rappels métier, avec les échéances urgentes en premier. Les modules à venir sont regroupés dans **Prochaines fonctionnalités**. Les filtres et tris propres à chaque liste sont conservés pendant la connexion.
 
 Dans **Paramètres**, le bouton d’arrêt enregistre la désactivation de la préférence générale de prospection. **Cette version n’a aucun moteur d’envoi : même avec la préférence activée, aucun message ne peut partir.**
 

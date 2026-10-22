@@ -1,3 +1,15 @@
+# Livraison 0.6 — 22 octobre 2026
+
+- Backend : 81 tests réussis sur SQLite ; 80 réussis et 1 ignoré sur PostgreSQL. Contrôles de propriété des conversations, rôles, consentement externe, contexte périmé, idempotence, réservation concurrente avant appel facturable et conservation des erreurs.
+- Fournisseur OpenAI : contrat HTTP, `store: false`, absence d’outils, message courant et contexte uniquement, absence d’historique transmis, erreurs sans fuite de clé. Réponses et erreurs simulées ; aucun appel réel avec une clé utilisateur n’a été effectué.
+- Interface : suite de 21 parcours navigateur, dont trois pour Charlie (briefing et annonce locale, persistance, mobile, consentement et reprise après erreur réseau, rendu texte sûr, protection de configuration). Les captures Charlie à 1440 et 390 pixels ont été vérifiées visuellement.
+- Windows/WebView2 : compte, contacts, documents, agenda, PDF et Charlie local réussis. Enregistrement d’une clé fictive avec DPAPI dans le backend embarqué, sans activation ni appel externe. Le test a permis de corriger l’aperçu périmé après navigation et la disparition de confirmation lors du rafraîchissement de configuration.
+- TypeScript/Vite, compilation Tauri et génération de l’installateur NSIS signé réussies. Migration `20261021_charlie` ajoutant configuration et conversations ; sauvegarde avant migration conservée.
+
+La connexion OpenAI réelle nécessite la clé et l’accès API de l’utilisateur, à vérifier avec le bouton dédié. Charlie reste en lecture seule ; Outlook, OCR/analyse de documents, radar, prospection et finance restent à venir. Le remplacement effectif d’une ancienne installation par l’updater et l’installation sur une machine vierge restent à vérifier.
+
+---
+
 # Livraison 0.5 — 21 octobre 2026
 
 - Backend : 65 tests réussis sur SQLite ; 64 réussis et 1 ignoré avec le lanceur PostgreSQL. Les tests ajoutés couvrent les liens et rôles, les conflits de modification, la persistance, les contrôles de rapprochement, les références d’estimation et la génération PDF.

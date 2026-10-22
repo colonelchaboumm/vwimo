@@ -176,3 +176,43 @@ class Estimate(Entity, Base):
     analysis: Mapped[str] = mapped_column(Text, default="")
     version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
     __mapper_args__ = {"version_id_col": version}
+
+
+class AISettings(Base):
+    __tablename__ = "ai_settings"
+    __table_args__ = (CheckConstraint("max_output_tokens BETWEEN 256 AND 8192", name="ai_output_limit"),)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    model: Mapped[str] = mapped_column(String(120), default="gpt-5-mini")
+    key_cipher: Mapped[str | None] = mapped_column(Text)
+    max_output_tokens: Mapped[int] = mapped_column(Integer, default=2048)
+    tested_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class AIConversation(Entity, Base):
+    __tablename__ = "ai_conversations"
+    __table_args__ = (Index("ix_ai_conversations_owner_updated", "user_id", "updated_at"),)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    title: Mapped[str] = mapped_column(String(180))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    pending_request_id: Mapped[str | None] = mapped_column(String(36))
+    pending_since: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class AITurn(Base):
+    __tablename__ = "ai_turns"
+    __table_args__ = (CheckConstraint("status IN ('running','completed','failed')", name="ai_turn_status"),
+                     CheckConstraint("engine IN ('local','openai')", name="ai_turn_engine"),
+                     Index("ix_ai_turns_conversation_created", "conversation_id", "created_at"))
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    conversation_id: Mapped[str] = mapped_column(ForeignKey("ai_conversations.id", ondelete="CASCADE"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    question: Mapped[str] = mapped_column(Text)
+    answer: Mapped[str] = mapped_column(Text, default="")
+    engine: Mapped[str] = mapped_column(String(20))
+    model: Mapped[str] = mapped_column(String(120), default="")
+    status: Mapped[str] = mapped_column(String(20), default="running")
+    context: Mapped[dict] = mapped_column(JSON)
+    error: Mapped[str] = mapped_column(String(500), default="")

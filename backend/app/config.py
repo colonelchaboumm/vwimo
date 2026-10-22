@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
+from pydantic import Field, SecretStr
 
 
 class Settings(BaseSettings):
@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://127.0.0.1:1420", "http://localhost:1420", "http://tauri.localhost", "tauri://localhost"]
     session_hours: int = Field(default=8, ge=1, le=24)
     desktop_key: str = ""
+    openai_api_key: SecretStr = SecretStr("")
 
     def validate_runtime(self):
         if self.mode == "local" and not self.database_url.startswith("sqlite:///"):

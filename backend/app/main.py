@@ -59,7 +59,7 @@ def create_app(settings: Settings | None = None):
         yield
         engine.dispose()
 
-    api = FastAPI(title="IMMO PILOT AI", version="0.5.0", lifespan=lifespan)
+    api = FastAPI(title="IMMO PILOT AI", version="0.6.0", lifespan=lifespan)
     api.state.sessions = sessions
     api.state.engine = engine
     api.add_middleware(BodyLimitMiddleware)
@@ -152,7 +152,7 @@ def create_app(settings: Settings | None = None):
     @api.get("/api/health")
     def health(db=Depends(database)):
         db.execute(text("SELECT 1"))
-        return {"status": "ok", "mode": settings.mode, "version": "0.5.0",
+        return {"status": "ok", "mode": settings.mode, "version": "0.6.0",
                 "setup_required": settings.mode == "local" and db.scalar(select(User.id).limit(1)) is None}
 
     @api.post("/api/auth/register-local", status_code=201)
@@ -416,7 +416,12 @@ def create_app(settings: Settings | None = None):
 
     @api.get("/api/settings")
     def preferences(account=Depends(user), db=Depends(database)):
-        return {"mode": settings.mode, "database": engine.dialect.name, "automation": record(db.get(AutomationSettings, 1)), "connectors": [{"name": n, "status": "not_configured", "can_send": False} for n in ("Charlie / OpenAI", "Microsoft Outlook", "Radar immobilier")], "sending_available": False}
+        from .charlie import config_row, public_config
+        ai = public_config(config_row(db), settings)
+        ai_status = "verified" if ai["configured"] and ai["enabled"] and ai["tested_at"] else "configured" if ai["configured"] else "local"
+        return {"mode": settings.mode, "database": engine.dialect.name, "automation": record(db.get(AutomationSettings, 1)),
+                "connectors": [{"name": "Charlie / OpenAI", "status": ai_status, "can_send": False},
+                               *[{"name": n, "status": "not_configured", "can_send": False} for n in ("Microsoft Outlook", "Radar immobilier")]], "sending_available": False}
 
     @api.put("/api/settings/automation")
     def automation(data: AutomationInput, account=Depends(writer), db=Depends(database)):
@@ -429,4 +434,7 @@ def create_app(settings: Settings | None = None):
     from .commercial import register_commercial
     register_commercial(api, database=database, user=user, writer=writer, audit=audit,
                         find=find, save=save, check_version=check_version, record=record)
+    from .charlie import register_charlie
+    register_charlie(api, settings=settings, database=database, user=user, writer=writer,
+                     audit=audit, save=save, check_version=check_version, record=record)
     return api

@@ -26,9 +26,10 @@ export class ApiError extends Error {
 export async function api<T>(
   path: string,
   options: RequestInit = {},
+  timeoutMs = 20000,
 ): Promise<T> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const requestToken = token;
   const generation = sessionGeneration;
   const headers = new Headers(options.headers);

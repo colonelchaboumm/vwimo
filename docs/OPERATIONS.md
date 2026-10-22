@@ -14,7 +14,9 @@ Copier `.env.example` vers `.env` dans la racine. La configuration est lue par F
 | `VITE_API_URL` | Adresse publique du backend au build du client, sans secret |
 | `IMMO_TEST_POSTGRES_URL` | Réservé aux tests, injecté par le lanceur PostgreSQL portable |
 
-Les clés OpenAI, client IDs Microsoft et tokens OAuth ne sont pas utilisés à ce stade. Ils seront ajoutés au backend au moment de leur intégration. Aucun identifiant n’est nécessaire pour utiliser la démonstration.
+`IMMO_OPENAI_API_KEY` est une variable secrète facultative du backend pour Charlie. Ne jamais la placer dans `VITE_*`, Git, les journaux ou les commandes partagées. Dans l’application Windows, préférer la configuration de Charlie : la clé est chiffrée dans `ai_settings` avec DPAPI pour le profil Windows courant. La clé enregistrée a priorité sur la variable backend ; supprimer la première ne supprime pas la variable. Activer et tester explicitement la connexion dans Charlie. Aucun identifiant externe n’est nécessaire pour le mode local. Les identifiants Microsoft ne sont pas encore utilisés.
+
+Les sauvegardes incluent les conversations et la clé chiffrée. Leur restauration sous un autre profil Windows peut nécessiter de ressaisir la clé ; aucun repli en clair n’est prévu. Protéger les archives, qui contiennent les autres données en clair.
 
 ## Espace personnel local (Windows 0.4)
 
@@ -40,6 +42,8 @@ GRANT INSERT, DELETE ON sessions TO immo_app;
 GRANT INSERT ON audit_logs TO immo_app;
 GRANT SELECT, INSERT, UPDATE ON estimates TO immo_app;
 GRANT SELECT, INSERT, UPDATE, DELETE ON calendar_events TO immo_app;
+GRANT SELECT, INSERT, UPDATE ON ai_settings TO immo_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ai_conversations, ai_turns TO immo_app;
 ```
 
 Les UUID sont générés dans le backend ; aucune séquence métier n’est nécessaire. Le rôle d’administration conserve la création et la maintenance des comptes. Les droits seront revus à chaque ajout de tables.
@@ -91,4 +95,4 @@ L’outil SQLite refuse PostgreSQL : la procédure PostgreSQL est documentée, m
 
 Procédure initiale manuelle : sauvegarder, arrêter l’API, mettre à jour le code et les dépendances verrouillées, exécuter `alembic upgrade head`, vérifier les tests, redémarrer et vérifier `/api/health`. Une régression doit être traitée par restauration sur une nouvelle base ou migration corrective, pas par un downgrade aveugle.
 
-L’updater Tauri signé, la signature de code Windows et le canal de publication ne sont pas encore configurés. Ne pas activer d’updater non signé. Le workflow CI peut compiler le client Windows après validation ; il ne publie ni ne déploie automatiquement de version.
+L’updater Tauri et le canal GitHub sont configurés depuis la version 0.3. Le workflow de publication compile et teste l’application avant de publier un installateur signé pour l’updater et son manifeste. La signature Authenticode Windows reste distincte et n’est pas configurée. Voir [la procédure de publication](MISES-A-JOUR.md).

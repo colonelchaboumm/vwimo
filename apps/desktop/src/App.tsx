@@ -54,6 +54,8 @@ import { CalendarPage } from "./components/commercial/CalendarPage";
 import { EstimatesPage } from "./components/commercial/EstimatesPage";
 import { MatchesPage } from "./components/commercial/MatchesPage";
 import "./components/commercial/commercial.css";
+import { CharliePage } from "./components/charlie/CharliePage";
+import "./components/charlie/charlie.css";
 import { Button } from "./components/ui/button";
 import { Modal } from "./components/ui/dialog";
 import { ContactForm, DocumentForm, MandateForm } from "./components/Forms";
@@ -76,7 +78,7 @@ const navigation = [
     group: "VOTRE QUOTIDIEN",
     items: [
       { id: "dashboard", label: "Tableau de bord", icon: LayoutDashboard },
-      { id: "charlie", label: "Charlie IA", icon: Sparkles, phase: 2 },
+      { id: "charlie", label: "Charlie", icon: Sparkles },
       { id: "prospecting", label: "Prospection", icon: Target, phase: 3 },
       { id: "radar", label: "Radar immobilier", icon: Radar, phase: 3 },
     ],
@@ -136,6 +138,7 @@ const pageNames: Record<string, string> = {
   calendar: "Agenda local",
   estimates: "Estimations",
   matching: "Rapprochements",
+  charlie: "Charlie",
 };
 type Editor =
   | { type: "contact"; item?: Contact; kind?: string }
@@ -243,7 +246,7 @@ function Login({
             Annecy & Grand Annecy
           </div>
         </div>
-        <small>IMMO PILOT AI · Version 0.5 · Votre activité, réunie</small>
+        <small>IMMO PILOT AI · Version 0.6 · Votre activité, réunie</small>
       </div>
       <div className="login-form-wrap">
         <div className="login-form">
@@ -385,6 +388,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [editor, setEditor] = useState<Editor>(null);
   const [commercialEditing, setCommercialEditing] = useState(false);
+  const [charlieEditing, setCharlieEditing] = useState(false);
   const [toast, setToast] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
   const [automationBusy, setAutomationBusy] = useState(false);
@@ -397,7 +401,6 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [notifications, setNotifications] = useState(false);
-  const [charlie, setCharlie] = useState(false);
   const [dark, setDark] = useState(
     () => readPreference("immo-theme") === "dark",
   );
@@ -436,7 +439,6 @@ export default function App() {
       setPage("dashboard");
       setSearchOpen(false);
       setNotifications(false);
-      setCharlie(false);
       setToast("");
       filters.current = {};
       setLoading(false);
@@ -524,7 +526,6 @@ export default function App() {
       setSearch("");
       setSearchOpen(false);
       setNotifications(false);
-      setCharlie(false);
       setPage("dashboard");
       setFilter("");
       setStatus("");
@@ -831,7 +832,11 @@ export default function App() {
           <div className="topbar-actions">
             <UpdateCenter
               blocked={
-                !!editor || commercialEditing || automationBusy || loading
+                !!editor ||
+                commercialEditing ||
+                charlieEditing ||
+                automationBusy ||
+                loading
               }
             />
             <Button
@@ -893,10 +898,10 @@ export default function App() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCharlie(true)}
+              onClick={() => navigate("charlie")}
             >
               <Sparkles size={15} />
-              Charlie <span className="phase-chip">P2</span>
+              Charlie
             </Button>
           </div>
         </header>
@@ -933,6 +938,15 @@ export default function App() {
           )}
           {data && (
             <>
+              <div hidden={page !== "charlie"}>
+                <CharliePage
+                  active={page === "charlie"}
+                  contacts={data.contacts}
+                  mandates={data.mandates}
+                  role={account.role}
+                  onEditing={setCharlieEditing}
+                />
+              </div>
               {page === "calendar" && (
                 <CalendarPage
                   contacts={data.contacts}
@@ -1402,7 +1416,7 @@ export default function App() {
                         <dt>Fuseau horaire</dt>
                         <dd>Europe/Paris</dd>
                         <dt>Version</dt>
-                        <dd>0.5.0 · Agenda, rapprochements et estimations</dd>
+                        <dd>0.6.0 · Charlie et intelligence commerciale</dd>
                       </dl>
                       <p>
                         {account.mode === "local"
@@ -1463,8 +1477,8 @@ export default function App() {
                       <div>
                         <h2>Connexions externes</h2>
                         <p>
-                          Ces intégrations seront développées dans les
-                          prochaines phases.
+                          Charlie se configure depuis sa page. Les autres
+                          intégrations restent à développer.
                         </p>
                       </div>
                     </div>
@@ -1482,12 +1496,31 @@ export default function App() {
                         <div>
                           <strong>{c.name}</strong>
                           <small>
-                            {i === 2
-                              ? "Sources sous licence ou autorisées · Phase 3"
-                              : "Intégration et autorisations à configurer · Phase 2"}
+                            {i === 0
+                              ? "Connexion facultative depuis Charlie · clé protégée sous Windows"
+                              : i === 2
+                                ? "Sources sous licence ou autorisées · Phase 3"
+                                : "Intégration et autorisations à configurer · Phase 2"}
                           </small>
                         </div>
-                        <span className="quiet-tag">Non connecté</span>
+                        {i === 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate("charlie")}
+                          >
+                            Ouvrir Charlie
+                          </Button>
+                        )}
+                        <span className="quiet-tag">
+                          {c.status === "verified"
+                            ? "Test confirmé"
+                            : c.status === "configured"
+                              ? "Configuré"
+                              : c.status === "local"
+                                ? "Mode local"
+                                : "Non connecté"}
+                        </span>
                       </div>
                     ))}
                   </section>
@@ -1539,7 +1572,7 @@ export default function App() {
                   : "Service indisponible"}
           </span>
           <span>
-            IMMO PILOT AI <b>0.5</b>
+            IMMO PILOT AI <b>0.6</b>
           </span>
         </footer>
       </div>
@@ -1577,36 +1610,6 @@ export default function App() {
             onSaved={saved}
           />
         ))}
-      {charlie && (
-        <Modal
-          open
-          onClose={() => setCharlie(false)}
-          title="Charlie · votre futur assistant"
-          description="Intégration prévue en phase 2"
-        >
-          <div className="charlie-preview">
-            <Sparkles size={36} />
-            <h3>Le contexte avant la conversation.</h3>
-            <p>
-              Charlie pourra s’appuyer sur vos contacts, vos mandats et vos
-              documents pour préparer des réponses et des actions à valider.
-            </p>
-            <div className="notice">
-              L’API OpenAI n’est pas encore intégrée. Aucune donnée n’est
-              transmise à un service d’IA dans cette version.
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setCharlie(false);
-                navigate("settings");
-              }}
-            >
-              Voir les connexions <ArrowRight size={16} />
-            </Button>
-          </div>
-        </Modal>
-      )}
       {toast && (
         <div className="toast" role="status">
           <Check size={17} />

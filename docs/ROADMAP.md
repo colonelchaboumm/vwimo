@@ -14,7 +14,9 @@ La version 0.2 apporte le nouveau design, le tri des contacts/mandats, la conser
 
 Livré en 0.5 : rapprochements explicables, agenda local jour/semaine/mois avec export ICS, dossiers d’estimation avec références déclarées et rapports PDF locaux. Les suggestions de fourchette utilisent les prix au m² minimum, médian et maximum d’un seul type de référence ; les montants finaux restent manuels. Les comparables ne sont pas vérifiés automatiquement.
 
-À poursuivre : Charlie/OpenAI avec outils autorisés, contexte de dossier, conversations et confirmations ; import de fiches ; brouillons et envois Outlook confirmés ; OAuth/MSAL avec stockage sécurisé des tokens ; synchronisation d’agenda, récurrences et notifications Windows ; connecteurs DVF, corrections et analyse assistée des estimations.
+Livré en 0.6 : Charlie en lecture seule, contexte de dossier affiché, conversations privées, préparation locale par règles et génération OpenAI facultative avec confirmation par demande. Aucun historique de conversation n’est transmis au fournisseur.
+
+À poursuivre : outils d’action de Charlie avec permissions et confirmations ; import et analyse de fiches/documents ; brouillons et envois Outlook confirmés ; OAuth/MSAL avec stockage sécurisé des tokens ; synchronisation d’agenda, récurrences et notifications Windows ; connecteurs DVF, corrections et analyse assistée des estimations.
 
 ## Phase 3 — prospection et carte
 

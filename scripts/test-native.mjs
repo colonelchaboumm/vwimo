@@ -203,9 +203,51 @@ try {
   await expect(
     page.getByRole("heading", { name: "Les bonnes rencontres." }),
   ).toBeVisible();
+  await page
+    .locator("nav")
+    .getByRole("button", { name: "Charlie", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Nouvelle conversation", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Prépare mon briefing du jour", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Préparer en local", exact: true })
+    .click();
+  await expect(page.locator(".charlie-answer").last()).toContainText(
+    "MODE LOCAL",
+  );
+  await expect(page.locator(".charlie-answer").last()).toContainText(
+    "Visite native locale",
+  );
+  await page
+    .getByRole("button", { name: "Configurer OpenAI", exact: true })
+    .click();
+  await page
+    .getByLabel("Clé API OpenAI", { exact: true })
+    .fill("sk-fictional-native-test-no-network");
+  await page
+    .getByRole("button", { name: "Enregistrer la connexion", exact: true })
+    .click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "Configuration enregistrée" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: "Tester la connexion (appel API)",
+      exact: true,
+    }),
+  ).toBeDisabled();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Fermer", exact: true })
+    .first()
+    .click();
   assert.deepEqual(errors, []);
   console.log(
-    "WebView2 : compte local, dossiers, documents, reconnexion, agenda, estimation et rapport PDF avec polices embarquées réussis.",
+    "WebView2 : compte, dossiers, agenda, PDF, Charlie local et stockage DPAPI d’une clé fictive réussis. Aucun appel OpenAI réel.",
   );
 } catch (error) {
   console.error(error);
