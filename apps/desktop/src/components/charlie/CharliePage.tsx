@@ -59,7 +59,7 @@ export function CharliePage({
   const [contextKind, setContextKind] = useState<ContextKind>("briefing");
   const [contextId, setContextId] = useState("");
   const [engine, setEngine] = useState<"local" | "openai">("local");
-  const [consent, setConsent] = useState(false);
+  const [consentDigest, setConsentDigest] = useState<string | null>(null);
   const [question, setQuestion] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -91,9 +91,13 @@ export function CharliePage({
     "/charlie/context?" + query.toString(),
     String(active),
   );
+  const consent = !!context.data && consentDigest === context.data.digest;
+  function setConsent(value: boolean) {
+    setConsentDigest(value ? context.data?.digest ?? null : null);
+  }
   useEffect(() => {
     setConsent(false);
-  }, [context.data?.digest, engine]);
+  }, [engine, active, contextKind, contextId]);
   useEffect(() => {
     const controller = new AbortController();
     setError("");
@@ -129,6 +133,7 @@ export function CharliePage({
     Date.parse(conversation.pending_since) > Date.now() - 120000;
   async function newConversation() {
     if (!lock.start()) return;
+    setConsent(false);
     setError("");
     try {
       const value = await api<Conversation>("/charlie/conversations", {
@@ -147,6 +152,7 @@ export function CharliePage({
     }
   }
   async function refresh() {
+    setConsent(false);
     context.refresh();
     if (!selected || !lock.start()) return;
     setError("");
