@@ -2,6 +2,10 @@
 
 ## Connexion
 
+Depuis la version 0.11, **Paramètres → Sécurité de mon compte** affiche les connexions actives et permet de changer le mot de passe ou de fermer toutes les sessions. Saisir le mot de passe actuel, puis confirmer explicitement la déconnexion. Pour un changement, saisir deux fois un nouveau secret différent, d’au moins 12 caractères ; ses espaces sont conservés. Se reconnecter ensuite avec ce nouveau mot de passe. Les dossiers et les autres comptes sont conservés. Une session est une connexion, pas un inventaire des appareils ; les horaires sont affichés en Europe/Paris. Seules les 50 plus récentes sont affichées si le total est supérieur.
+
+Un secret actuel incorrect conserve la connexion, avec un maximum de dix tentatives de confirmation en cinq minutes. En cas de réponse réseau perdue, tenter une reconnexion pour vérifier le résultat. Les opérations déjà autorisées et en cours ne sont pas annulées par la fermeture des sessions. Cette gestion est indisponible en démonstration et ne fournit pas encore de récupération d’un mot de passe oublié.
+
 Ouvrir l’application Windows, puis choisir votre nom, votre adresse e-mail, un mot de passe de 12 caractères minimum et sa confirmation. Cliquer sur **Créer mon compte local**. L’adresse e-mail sert uniquement d’identifiant : aucun message ni lien de validation n’est envoyé. L’espace démarre sans dossiers fictifs.
 
 Aux lancements suivants, utiliser **Se connecter** avec le même e-mail et mot de passe. Un seul compte propriétaire peut être créé dans cet espace. La session expire après huit heures et se ferme avec l’interface ; les dossiers et le compte sont conservés. Le mot de passe n’est jamais stocké en clair : seule son empreinte Argon2id est conservée.

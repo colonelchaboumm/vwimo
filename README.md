@@ -1,10 +1,10 @@
 # IMMO PILOT AI
 
-Poste de travail immobilier pour Annecy et le Grand Annecy. **Version 0.10 — newsletters locales, préférences et exclusions.**
+Poste de travail immobilier pour Annecy et le Grand Annecy. **Version 0.11 — mot de passe et sessions du compte privé.**
 
 ## Installer sous Windows
 
-Télécharger le fichier `IMMO-PILOT-AI_0.10.0_x64-setup.exe` depuis [la dernière version](https://github.com/colonelchaboumm/vwimo/releases/latest), puis l’installer et ouvrir l’application. Le backend Python est inclus et lancé automatiquement. Aucun terminal, Node ou Python à installer séparément.
+Télécharger le fichier `IMMO-PILOT-AI_0.11.0_x64-setup.exe` depuis [la dernière version](https://github.com/colonelchaboumm/vwimo/releases/latest), puis l’installer et ouvrir l’application. Le backend Python est inclus et lancé automatiquement. Aucun terminal, Node ou Python à installer séparément.
 
 Cette première installation active les mises à jour futures : une icône de téléchargement devient bleue lorsqu’une version est disponible. Cliquer dessus, lire les nouveautés puis choisir **Installer et redémarrer**. Les paquets sont vérifiés par signature avant installation ; les données restent dans le profil Windows. [Détails et procédure de publication](docs/MISES-A-JOUR.md).
 

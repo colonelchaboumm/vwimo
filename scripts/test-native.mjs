@@ -452,11 +452,9 @@ try {
   await page
     .getByRole("button", { name: "Préférences newsletter", exact: true })
     .click();
-  await page
-    .getByLabel("Contact newsletter", { exact: true })
-    .selectOption({
-      label: "Vendeur natif WebView2 · vendeur-native@example.com",
-    });
+  await page.getByLabel("Contact newsletter", { exact: true }).selectOption({
+    label: "Vendeur natif WebView2 · vendeur-native@example.com",
+  });
   await page
     .getByRole("button", {
       name: "Gérer la préférence newsletter",
@@ -537,9 +535,129 @@ try {
     path: "docs/screenshots/newsletter-webview2.png",
     fullPage: true,
   });
+  await page.getByRole("button", { name: "Fermer", exact: true }).click();
+  await page.getByRole("button", { name: "Paramètres", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Sécurité de mon compte", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Sécurité de mon compte" }),
+  ).toBeVisible();
+  await page
+    .getByLabel("Mot de passe actuel", { exact: true })
+    .fill("Mauvais secret");
+  await page
+    .getByLabel("Nouveau mot de passe", { exact: true })
+    .fill(" Nouveau secret natif 2026! ");
+  await page
+    .getByLabel("Confirmer le nouveau mot de passe", { exact: true })
+    .fill(" Nouveau secret natif 2026! ");
+  await page
+    .getByRole("checkbox", {
+      name: "Je confirme la fermeture de toutes mes sessions, y compris celle-ci. Mes dossiers seront conservés.",
+      exact: true,
+    })
+    .check();
+  await page
+    .getByRole("button", {
+      name: "Modifier le mot de passe et me déconnecter",
+      exact: true,
+    })
+    .click();
+  await expect(page.getByRole("alert")).toContainText(
+    "Le mot de passe actuel est incorrect",
+  );
+  await page
+    .getByLabel("Mot de passe actuel", { exact: true })
+    .fill("Native account secret 2026!");
+  await page.getByRole("button", { name: "Fermer", exact: true }).click();
+  await expect(
+    page.getByText("Conserver votre saisie ?", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Continuer la saisie", exact: true })
+    .click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({
+    path: "docs/screenshots/securite-compte-mobile.png",
+    fullPage: true,
+  });
+  assert(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  );
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.screenshot({
+    path: "docs/screenshots/securite-compte-webview2.png",
+    fullPage: true,
+  });
+  await page
+    .getByRole("button", {
+      name: "Modifier le mot de passe et me déconnecter",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Bienvenue dans votre espace." }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Mot de passe modifié. Toutes les sessions sont fermées.", {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await page
+    .getByLabel("Adresse e-mail", { exact: true })
+    .fill("native-account@example.com");
+  await page
+    .getByLabel("Mot de passe", { exact: true })
+    .fill("Native account secret 2026!");
+  await page.getByRole("button", { name: "Se connecter", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText(
+    "Identifiants incorrects",
+  );
+  await page
+    .getByLabel("Mot de passe", { exact: true })
+    .fill(" Nouveau secret natif 2026! ");
+  await page.getByRole("button", { name: "Se connecter", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Bonjour, Camille." }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Paramètres", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Sécurité de mon compte", exact: true })
+    .click();
+  await page
+    .getByLabel("Action de sécurité", { exact: true })
+    .selectOption("revoke");
+  await page
+    .getByLabel("Mot de passe actuel", { exact: true })
+    .fill(" Nouveau secret natif 2026! ");
+  await page
+    .getByRole("checkbox", {
+      name: "Je confirme la fermeture de toutes mes sessions, y compris celle-ci. Mes dossiers seront conservés.",
+      exact: true,
+    })
+    .check();
+  await page
+    .getByRole("button", { name: "Fermer toutes mes sessions", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Bienvenue dans votre espace." }),
+  ).toBeVisible();
+  await page
+    .getByLabel("Adresse e-mail", { exact: true })
+    .fill("native-account@example.com");
+  await page
+    .getByLabel("Mot de passe", { exact: true })
+    .fill(" Nouveau secret natif 2026! ");
+  await page.getByRole("button", { name: "Se connecter", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Bonjour, Camille." }),
+  ).toBeVisible();
   assert.deepEqual(errors, []);
   console.log(
-    "WebView2 : compte, dossiers, agenda, PDF, Charlie, DPAPI, radar, carte, finance, partenaires, pilotage et newsletter EML réussis. Aucun envoi d’e-mail ni appel OpenAI ni requête de tuile OSM.",
+    "WebView2 : compte, dossiers, agenda, PDF, Charlie, DPAPI, radar, carte, finance, partenaires, pilotage, newsletter EML et sécurité du compte réussis. Aucun envoi d’e-mail ni appel OpenAI ni requête de tuile OSM.",
   );
 } catch (error) {
   console.error(error);

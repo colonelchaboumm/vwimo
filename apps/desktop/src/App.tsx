@@ -60,6 +60,7 @@ import { RadarPage } from "./components/radar/RadarPage";
 import { ProspectingPage } from "./components/radar/ProspectingPage";
 import { PropertyMapPage } from "./components/radar/PropertyMapPage";
 import { OutlookSetup } from "./components/OutlookSetup";
+import { AccountSecurity } from "./components/AccountSecurity";
 import { TransactionsPage } from "./components/finance/TransactionsPage";
 import { FinancePage } from "./components/finance/FinancePage";
 import { PartnersPage } from "./components/partners/PartnersPage";
@@ -266,7 +267,7 @@ function Login({
             Annecy & Grand Annecy
           </div>
         </div>
-        <small>IMMO PILOT AI · Version 0.10 · Votre activité, réunie</small>
+        <small>IMMO PILOT AI · Version 0.11 · Votre activité, réunie</small>
       </div>
       <div className="login-form-wrap">
         <div className="login-form">
@@ -410,6 +411,7 @@ export default function App() {
   const [commercialEditing, setCommercialEditing] = useState(false);
   const [charlieEditing, setCharlieEditing] = useState(false);
   const [outlookSetup, setOutlookSetup] = useState(false);
+  const [accountSecurity, setAccountSecurity] = useState(false);
   const [toast, setToast] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
   const [automationBusy, setAutomationBusy] = useState(false);
@@ -449,6 +451,7 @@ export default function App() {
   }, []);
   useEffect(() => {
     const cb = () => {
+      setAccountSecurity(false);
       loadSequence.current++;
       setOutlookSetup(false);
       setToken("");
@@ -532,6 +535,10 @@ export default function App() {
         : "Enregistrement confirmé. La liste reste à actualiser.",
     );
   }
+  function securitySignedOut(message: string) {
+    window.dispatchEvent(new Event("session-expired"));
+    setLoginMessage(message);
+  }
   async function logout() {
     let message = "";
     try {
@@ -540,6 +547,7 @@ export default function App() {
       message =
         "Déconnexion locale effectuée. Le serveur n’a pas confirmé la révocation ; la session distante expirera automatiquement.";
     } finally {
+      setAccountSecurity(false);
       setOutlookSetup(false);
       loadSequence.current++;
       setToken("");
@@ -863,6 +871,7 @@ export default function App() {
                 commercialEditing ||
                 charlieEditing ||
                 outlookSetup ||
+                accountSecurity ||
                 automationBusy ||
                 loading
               }
@@ -1453,13 +1462,26 @@ export default function App() {
                         <dt>Fuseau horaire</dt>
                         <dd>Europe/Paris</dd>
                         <dt>Version</dt>
-                        <dd>0.10.0 · Newsletters et préférences</dd>
+                        <dd>0.11.0 · Sécurité du compte</dd>
                       </dl>
                       <p>
                         {account.mode === "local"
                           ? "Votre compte et vos dossiers sont enregistrés sur cet ordinateur. Le mot de passe n’est jamais stocké en clair. Cette connexion protège l’accès dans l’application ; elle ne chiffre pas les fichiers du disque. L’ancienne démonstration reste conservée séparément."
                           : "L’espace personnel local ne nécessite aucun serveur externe. Le mode partagé PostgreSQL reste disponible avec une configuration dédiée."}
                       </p>
+                      <Button
+                        variant="outline"
+                        disabled={account.mode === "demo"}
+                        onClick={() => setAccountSecurity(true)}
+                      >
+                        Sécurité de mon compte
+                      </Button>
+                      {account.mode === "demo" && (
+                        <small>
+                          La gestion des identifiants est disponible dans votre
+                          espace personnel.
+                        </small>
+                      )}
                     </section>
                     <section className="panel info-panel">
                       <h2>
@@ -1618,7 +1640,7 @@ export default function App() {
                   : "Service indisponible"}
           </span>
           <span>
-            IMMO PILOT AI <b>0.10</b>
+            IMMO PILOT AI <b>0.11</b>
           </span>
         </footer>
       </div>
@@ -1657,6 +1679,12 @@ export default function App() {
           />
         ))}
       {outlookSetup && <OutlookSetup onClose={() => setOutlookSetup(false)} />}
+      {accountSecurity && (
+        <AccountSecurity
+          onClose={() => setAccountSecurity(false)}
+          onSignedOut={securitySignedOut}
+        />
+      )}
       {toast && (
         <div className="toast" role="status">
           <Check size={17} />

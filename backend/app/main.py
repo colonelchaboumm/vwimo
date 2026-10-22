@@ -59,7 +59,7 @@ def create_app(settings: Settings | None = None):
         yield
         engine.dispose()
 
-    api = FastAPI(title="IMMO PILOT AI", version="0.10.0", lifespan=lifespan)
+    api = FastAPI(title="IMMO PILOT AI", version="0.11.0", lifespan=lifespan)
     api.state.sessions = sessions
     api.state.engine = engine
     api.add_middleware(BodyLimitMiddleware)
@@ -99,7 +99,7 @@ def create_app(settings: Settings | None = None):
         digest = hashlib.sha256(credentials.credentials.encode()).hexdigest()
         session = db.scalar(select(SessionToken).where(SessionToken.token_hash == digest, SessionToken.expires_at > now()))
         account = db.get(User, session.user_id) if session else None
-        if not account or not account.active:
+        if not account or not account.active or session.auth_version != account.auth_version:
             raise HTTPException(401, "Session expirée. Reconnectez-vous.")
         return account
 
@@ -141,7 +141,7 @@ def create_app(settings: Settings | None = None):
             raise HTTPException(403, "Ce compte est désactivé.")
         db.execute(delete(SessionToken).where(SessionToken.expires_at <= now()))
         token = secrets.token_urlsafe(48)
-        db.add(SessionToken(user_id=account.id, token_hash=hashlib.sha256(token.encode()).hexdigest(), expires_at=now() + timedelta(hours=settings.session_hours)))
+        db.add(SessionToken(user_id=account.id, token_hash=hashlib.sha256(token.encode()).hexdigest(), expires_at=now() + timedelta(hours=settings.session_hours), auth_version=account.auth_version))
         audit(db, account, "auth.login", account.id)
         db.commit()
         return {"token": token, "user": {"name": account.name, "email": account.email, "role": account.role}, "mode": settings.mode}
@@ -149,10 +149,13 @@ def create_app(settings: Settings | None = None):
     attempts = defaultdict(deque)
     login_lock = threading.Lock()
 
+    from .account_security import register as register_account_security
+    register_account_security(api, settings, database, user, audit, hasher, bearer)
+
     @api.get("/api/health")
     def health(db=Depends(database)):
         db.execute(text("SELECT 1"))
-        return {"status": "ok", "mode": settings.mode, "version": "0.10.0",
+        return {"status": "ok", "mode": settings.mode, "version": "0.11.0",
                 "setup_required": settings.mode == "local" and db.scalar(select(User.id).limit(1)) is None}
 
     @api.post("/api/auth/register-local", status_code=201)

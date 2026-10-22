@@ -136,6 +136,14 @@ MapLibre et son worker ESM sont empaquetés dans le client ; aucune bibliothèqu
 
 `outlook_setup.py` conserve seulement le client ID et le locataire d’une future application publique. Les autorités sont limitées aux audiences Microsoft connues ou à un UUID ; aucun secret client, jeton ni mot de passe Microsoft n’est stocké. Les états `connected`, `can_send` et `authorization_available` restent faux.
 
+## Sécurité personnelle 0.11
+
+`account_security.py` expose uniquement les sessions du compte connecté, avec une limite d’affichage de 50 et un total indépendant. Ni jeton, empreinte, identifiant interne de session, adresse IP ni appareil supposé ne sont retournés. Les dates sont normalisées en UTC puis affichées en Europe/Paris.
+
+La migration `20261022_account_security` ajoute `auth_version` aux utilisateurs et aux sessions, initialisé à 1 pour préserver les connexions existantes. Chaque authentification vérifie la concordance des générations. Changement de mot de passe et révocation globale incrémentent atomiquement la génération par comparaison conditionnelle, suppriment les sessions du seul compte et journalisent l’action dans la même transaction. Une connexion ayant déjà vérifié l’ancien hash ne peut donc pas réintroduire une session utilisable après la mutation. Les requêtes déjà autorisées peuvent terminer leur travail.
+
+Les mutations exigent le mot de passe actuel et une confirmation explicite ; les lecteurs peuvent gérer leurs propres identifiants. La démonstration les refuse. Dix tentatives au maximum par compte sur cinq minutes sont conservées en mémoire par processus ; un déploiement partagé multiprocessus doit centraliser ce contrôle. La réponse 403 pour un mauvais secret de confirmation conserve la connexion. Le nouveau secret garde ses espaces, exige 12 caractères et une seconde saisie identique ; aucun secret n’est écrit dans l’audit.
+
 ## Intégrations externes
 
 Les connexions affichées par `/api/settings` ont toutes `can_send=false`. Le client ne dispose d’aucune route d’envoi. Les prochains connecteurs devront retourner un résultat technique vérifiable, distinguer `not_configured`, `blocked`, `ready` et `error`, et journaliser les autorisations et les réponses du fournisseur.

@@ -32,6 +32,7 @@ class User(Entity, Base):
     password_hash: Mapped[str] = mapped_column(Text)
     role: Mapped[str] = mapped_column(String(20), default="advisor")
     active: Mapped[bool] = mapped_column(Boolean, default=True)
+    auth_version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
 
 
 class SessionToken(Entity, Base):
@@ -39,6 +40,7 @@ class SessionToken(Entity, Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     token_hash: Mapped[str] = mapped_column(String(64), unique=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    auth_version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
 
 
 class Contact(Entity, Base):

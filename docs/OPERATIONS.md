@@ -24,6 +24,12 @@ L’application Windows configure automatiquement `local.db` et `local-documents
 
 La sauvegarde SQLite accepte aussi `IMMO_MODE=local` avec l’URL exacte du fichier `local.db` et le dossier `local-documents`. Arrêter l’application avant une sauvegarde manuelle avec documents, puis utiliser `app.backup create` comme ci-dessous avec un nouveau nom d’archive. La restauration restitue un fichier `database.db` et un dossier `documents`, marqués `local` ; elle invalide les sessions et préserve le compte. Vérifier dans un espace neuf, sans écraser les données actives. Le mot de passe ne chiffre ni la base ni les archives.
 
+## Identifiants personnels 0.11
+
+Dans Paramètres → Sécurité de mon compte, l’utilisateur peut changer son mot de passe ou fermer toutes ses sessions. Les deux actions exigent le secret actuel et ferment aussi la connexion courante. Elles conservent les dossiers, conversations, documents et autres comptes. Les sessions expirées ou d’une ancienne génération sont exclues de la liste. En cas de réponse perdue, tenter une reconnexion avec le nouveau secret pour un changement de mot de passe ; ne pas assimiler une erreur réseau à un échec certain de la transaction.
+
+La migration conserve les hashes et initialise la génération des comptes/sessions existants. Les sauvegardes incluent ces données ; une restauration doit continuer à supprimer les sessions. La récupération d’un secret oublié, la modification de l’adresse de connexion et la gestion administrative des utilisateurs restent à prévoir. La limite des confirmations est en mémoire, par compte et par processus ; centraliser cette limite si plusieurs processus API partagent PostgreSQL.
+
 ## PostgreSQL réel
 
 Provisionner une base dédiée et un stockage documentaire distinct. Utiliser un rôle propriétaire pour les migrations, puis un rôle applicatif sans privilèges superutilisateur ni DDL pour l’API. Ne pas partager la base de démonstration.
@@ -39,6 +45,7 @@ GRANT INSERT, UPDATE ON contacts, buyer_criteria, properties, mandates, document
   automation_settings TO immo_app;
 GRANT DELETE ON buyer_criteria TO immo_app;
 GRANT INSERT, DELETE ON sessions TO immo_app;
+GRANT UPDATE (password_hash, auth_version) ON users TO immo_app;
 GRANT INSERT ON audit_logs TO immo_app;
 GRANT SELECT, INSERT, UPDATE ON estimates TO immo_app;
 GRANT SELECT, INSERT, UPDATE, DELETE ON calendar_events TO immo_app;

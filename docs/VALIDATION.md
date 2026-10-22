@@ -1,3 +1,14 @@
+# Livraison 0.11 — 22 octobre 2026
+
+- Backend : 155 cas au total. Suite initiale de 154 réussie sur SQLite, 153 réussis et 1 ignoré sur PostgreSQL ; les seize cas de sécurité sont revérifiés sur les deux moteurs après ajout du contrôle concurrent. Ils couvrent conservation des espaces, validation des secrets, révocation de toutes les sessions du seul compte, accès lecteur à ses propres identifiants, limitation des tentatives sans déconnexion injustifiée, génération expirée, exclusion des sessions expirées, liste bornée et migration préservant les comptes et connexions existants.
+- Concurrence : une connexion suspendue après vérification de l’ancien secret ne peut pas produire une session utilisable après changement du mot de passe. Un second scénario synchronise une révocation et un changement avant leurs mises à jour conditionnelles : une seule transaction est validée, une seule action est auditée.
+- Interface : 32 parcours navigateur réussis ; gestion des identifiants désactivée en démonstration. Parcours natif Windows/WebView2 avec véritable compte local fictif : mauvais secret conservant la connexion, saisie conservée avant fermeture, nouveau mot de passe avec espaces, ancien secret refusé, reconnexion, révocation globale puis nouvelle connexion. Captures inspectées à 1440 et 390 pixels, aucun débordement horizontal.
+- Livraison locale : TypeScript/Vite, backend embarqué, Tauri, installateur NSIS et signature updater générés. Aperçu personnel migré en 0.11.0 avec sauvegarde automatique et sans création de propriétaire fictif. Aucun e-mail envoyé ni connexion externe nécessaire aux tests.
+
+La récupération d’un mot de passe oublié, le changement d’adresse de connexion et l’administration des comptes restent à développer. Le mot de passe ne chiffre pas les fichiers ; la révocation ne peut pas annuler une opération déjà autorisée et en cours. La limite des tentatives est en mémoire par processus. L’installation sur une machine vierge et le remplacement effectif par l’updater restent à vérifier.
+
+---
+
 # Livraison 0.10 — 22 octobre 2026
 
 - Backend : 139 cas au total. Suite initiale de 138 tests réussie sur SQLite, avec 137 réussis et 1 ignoré sur PostgreSQL ; les dix cas newsletter sont revérifiés après la correction des adresses internationalisées. Ils couvrent autorisation distincte, absence d’accord implicite, préférences datées, dédoublonnage, refus/retrait sur une adresse partagée, changement d’e-mail, exclusions conservées, levée administrateur confirmée, brouillons incomplets/archivés, versions et en-têtes, droits lecteur, contenu UTF-8, fichier individuel et reprise idempotente. Un test synchronise un export et un retrait avant leur flush : un seul peut être validé. Une partie locale Unicode n’est jamais transformée en un autre destinataire ASCII.

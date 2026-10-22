@@ -1,0 +1,13 @@
+.account-sessions {
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 0;
+  list-style: none;
+}
+.account-sessions li {
+  padding: 10px 0;
+}
+.account-sessions small {
+  display: block;
+  overflow-wrap: anywhere;
+}
