@@ -1,0 +1,260 @@
+.radar-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  border: 0;
+  padding: 0;
+  margin: 20px 0;
+  min-width: 0;
+}
+.radar-full {
+  grid-column: 1 / -1;
+}
+.outlook-steps {
+  padding-left: 22px;
+  margin: 24px 0;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.outlook-steps li {
+  padding: 8px 0;
+}
+.radar-form-grid textarea,
+.radar-form-grid input,
+.radar-form-grid select {
+  width: 100%;
+}
+.radar-card {
+  padding: 25px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.radar-card h2 {
+  font-size: 19px;
+  line-height: 1.5;
+  letter-spacing: -0.5px;
+  margin: 19px 0 10px;
+}
+.radar-card p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+  margin: 12px 0 18px;
+}
+.radar-card .match-top {
+  font-size: 11px;
+  color: var(--muted);
+  gap: 12px;
+}
+.radar-pill {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: var(--accent);
+  background: var(--soft);
+  font-size: 11px;
+}
+.radar-price {
+  font-size: 23px;
+  font-weight: 650;
+  letter-spacing: -0.6px;
+}
+.radar-price small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  margin-top: 7px;
+}
+.radar-signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 16px;
+}
+.radar-signals span {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  border-radius: 6px;
+  background: var(--hover);
+  color: var(--muted);
+  padding: 6px 9px;
+  font-size: 10px;
+}
+.radar-empty {
+  text-align: center;
+  padding: 65px 25px;
+  margin-top: 24px;
+}
+.radar-empty h2 {
+  font-size: 23px;
+  letter-spacing: -0.6px;
+}
+.radar-empty p {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 15px;
+  line-height: 1.8;
+}
+.radar-pagination {
+  justify-content: flex-end;
+  margin-top: 28px;
+}
+.radar-detail {
+  font-size: 13px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+.radar-detail h3,
+.radar-section-title {
+  margin: 25px 0 15px;
+  font-size: 15px;
+}
+.radar-detail p {
+  white-space: pre-wrap;
+  color: var(--muted);
+  margin: 13px 0;
+}
+.radar-detail li {
+  margin: 12px 0 12px 20px;
+}
+.radar-detail small {
+  display: block;
+  color: var(--muted);
+}
+.radar-file {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin: 24px 0;
+  font-size: 12px;
+}
+.radar-file input {
+  max-width: 100%;
+}
+.radar-import-preview {
+  border-top: 1px solid var(--border);
+  margin-top: 25px;
+  padding-top: 22px;
+}
+.radar-import-preview h3 {
+  font-size: 15px;
+}
+.radar-import-preview ul {
+  max-height: 250px;
+  overflow-y: auto;
+  margin: 20px 0;
+  padding-left: 20px;
+}
+.radar-import-preview li {
+  font-size: 12px;
+  line-height: 2;
+  overflow-wrap: anywhere;
+}
+.prospect-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin: 24px 0 6px;
+}
+.prospect-stats > div {
+  padding: 24px;
+}
+.prospect-stats span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+.prospect-stats strong {
+  display: block;
+  font-size: 30px;
+  margin-top: 13px;
+  font-weight: 600;
+}
+.prospect-opposed {
+  color: var(--danger);
+}
+.prospect-followup {
+  color: var(--accent) !important;
+}
+.prospect-timeline {
+  list-style: none;
+  border-left: 2px solid var(--border);
+  margin: 24px 12px;
+  padding-left: 25px;
+}
+.prospect-timeline li {
+  margin: 25px 0;
+  font-size: 12px;
+}
+.prospect-timeline small {
+  display: block;
+  color: var(--muted);
+  line-height: 1.8;
+  margin: 7px 0;
+}
+.prospect-timeline p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.9;
+}
+.radar-map {
+  height: 470px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.radar-map-marker {
+  color: #007aff;
+  font-size: 30px;
+  line-height: 1;
+  background: white;
+  border: 2px solid #007aff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 16px #0003;
+}
+.radar-map .maplibregl-popup-content {
+  color: #202124;
+  padding: 16px;
+  font-size: 12px;
+  line-height: 1.8;
+  max-width: 270px;
+}
+.radar-basemap {
+  margin-top: 24px;
+  line-height: 1.8;
+}
+@media (max-width: 1100px) {
+  .prospect-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .radar-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .radar-card {
+    padding: 20px;
+  }
+  .radar-map {
+    height: 370px;
+  }
+  .prospect-stats > div {
+    padding: 17px;
+  }
+  .radar-pagination {
+    justify-content: stretch;
+  }
+  .radar-pagination > button {
+    flex: 1;
+  }
+}

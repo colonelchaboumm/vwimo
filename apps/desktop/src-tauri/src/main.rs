@@ -26,10 +26,17 @@ impl Backend {
 fn backend_connection(state: tauri::State<'_, Backend>) -> Connection { state.connection.clone() }
 
 fn main() {
-    let app = tauri::Builder::default()
-        .plugin(tauri_plugin_single_instance::init(|app, _, _| {
+    let builder = tauri::Builder::default();
+    // Les tests utilisent une base dédiée et ne doivent pas activer la fenêtre
+    // d'une installation personnelle déjà ouverte sur le même poste.
+    let isolated_test = std::env::var("IMMO_DESKTOP_TEST_INSTANCE").as_deref() == Ok("1")
+        && std::env::var_os("IMMO_DESKTOP_DATA_DIR").is_some();
+    let builder = if isolated_test { builder } else {
+        builder.plugin(tauri_plugin_single_instance::init(|app, _, _| {
             if let Some(window) = app.get_webview_window("main") { let _ = window.show(); let _ = window.set_focus(); }
         }))
+    };
+    let app = builder
         .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![backend_connection])
         .setup(|app| {

@@ -56,6 +56,11 @@ import { MatchesPage } from "./components/commercial/MatchesPage";
 import "./components/commercial/commercial.css";
 import { CharliePage } from "./components/charlie/CharliePage";
 import "./components/charlie/charlie.css";
+import { RadarPage } from "./components/radar/RadarPage";
+import { ProspectingPage } from "./components/radar/ProspectingPage";
+import { PropertyMapPage } from "./components/radar/PropertyMapPage";
+import { OutlookSetup } from "./components/OutlookSetup";
+import "./components/radar/radar.css";
 import { Button } from "./components/ui/button";
 import { Modal } from "./components/ui/dialog";
 import { ContactForm, DocumentForm, MandateForm } from "./components/Forms";
@@ -79,8 +84,8 @@ const navigation = [
     items: [
       { id: "dashboard", label: "Tableau de bord", icon: LayoutDashboard },
       { id: "charlie", label: "Charlie", icon: Sparkles },
-      { id: "prospecting", label: "Prospection", icon: Target, phase: 3 },
-      { id: "radar", label: "Radar immobilier", icon: Radar, phase: 3 },
+      { id: "prospecting", label: "Prospection", icon: Target },
+      { id: "radar", label: "Radar immobilier", icon: Radar },
     ],
   },
   {
@@ -91,7 +96,7 @@ const navigation = [
       { id: "mandates", label: "Mandats", icon: Building2 },
       { id: "matching", label: "Rapprochements", icon: Handshake },
       { id: "estimates", label: "Estimations", icon: BarChart3 },
-      { id: "map", label: "Carte immobilière", icon: Map, phase: 3 },
+      { id: "map", label: "Carte immobilière", icon: Map },
       {
         id: "calendar",
         label: "Agenda local",
@@ -139,6 +144,9 @@ const pageNames: Record<string, string> = {
   estimates: "Estimations",
   matching: "Rapprochements",
   charlie: "Charlie",
+  radar: "Radar immobilier",
+  prospecting: "Prospection",
+  map: "Carte immobilière",
 };
 type Editor =
   | { type: "contact"; item?: Contact; kind?: string }
@@ -246,7 +254,7 @@ function Login({
             Annecy & Grand Annecy
           </div>
         </div>
-        <small>IMMO PILOT AI · Version 0.6 · Votre activité, réunie</small>
+        <small>IMMO PILOT AI · Version 0.7 · Votre activité, réunie</small>
       </div>
       <div className="login-form-wrap">
         <div className="login-form">
@@ -389,6 +397,7 @@ export default function App() {
   const [editor, setEditor] = useState<Editor>(null);
   const [commercialEditing, setCommercialEditing] = useState(false);
   const [charlieEditing, setCharlieEditing] = useState(false);
+  const [outlookSetup, setOutlookSetup] = useState(false);
   const [toast, setToast] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
   const [automationBusy, setAutomationBusy] = useState(false);
@@ -429,6 +438,7 @@ export default function App() {
   useEffect(() => {
     const cb = () => {
       loadSequence.current++;
+      setOutlookSetup(false);
       setToken("");
       setAccount(null);
       setData(null);
@@ -518,6 +528,7 @@ export default function App() {
       message =
         "Déconnexion locale effectuée. Le serveur n’a pas confirmé la révocation ; la session distante expirera automatiquement.";
     } finally {
+      setOutlookSetup(false);
       loadSequence.current++;
       setToken("");
       setAccount(null);
@@ -835,6 +846,7 @@ export default function App() {
                 !!editor ||
                 commercialEditing ||
                 charlieEditing ||
+                outlookSetup ||
                 automationBusy ||
                 loading
               }
@@ -947,6 +959,19 @@ export default function App() {
                   onEditing={setCharlieEditing}
                 />
               </div>
+              {page === "radar" && (
+                <RadarPage
+                  readonly={readonly}
+                  onEditing={setCommercialEditing}
+                />
+              )}
+              {page === "prospecting" && (
+                <ProspectingPage
+                  readonly={readonly}
+                  onEditing={setCommercialEditing}
+                />
+              )}
+              {page === "map" && <PropertyMapPage />}
               {page === "calendar" && (
                 <CalendarPage
                   contacts={data.contacts}
@@ -1416,7 +1441,7 @@ export default function App() {
                         <dt>Fuseau horaire</dt>
                         <dd>Europe/Paris</dd>
                         <dt>Version</dt>
-                        <dd>0.6.0 · Charlie et intelligence commerciale</dd>
+                        <dd>0.7.0 · Radar, carte et suivi de prospection</dd>
                       </dl>
                       <p>
                         {account.mode === "local"
@@ -1499,7 +1524,7 @@ export default function App() {
                             {i === 0
                               ? "Connexion facultative depuis Charlie · clé protégée sous Windows"
                               : i === 2
-                                ? "Sources sous licence ou autorisées · Phase 3"
+                                ? "Saisie et import CSV · aucune collecte automatique"
                                 : "Intégration et autorisations à configurer · Phase 2"}
                           </small>
                         </div>
@@ -1510,6 +1535,15 @@ export default function App() {
                             onClick={() => navigate("charlie")}
                           >
                             Ouvrir Charlie
+                          </Button>
+                        )}
+                        {i === 1 && account.role === "admin" && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setOutlookSetup(true)}
+                          >
+                            Préparer Outlook
                           </Button>
                         )}
                         <span className="quiet-tag">
@@ -1572,7 +1606,7 @@ export default function App() {
                   : "Service indisponible"}
           </span>
           <span>
-            IMMO PILOT AI <b>0.6</b>
+            IMMO PILOT AI <b>0.7</b>
           </span>
         </footer>
       </div>
@@ -1610,6 +1644,7 @@ export default function App() {
             onSaved={saved}
           />
         ))}
+      {outlookSetup && <OutlookSetup onClose={() => setOutlookSetup(false)} />}
       {toast && (
         <div className="toast" role="status">
           <Check size={17} />

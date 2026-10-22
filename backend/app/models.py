@@ -137,6 +137,84 @@ class AutomationSettings(Base):
     sector: Mapped[str] = mapped_column(String(120), default="Annecy et Grand Annecy")
 
 
+class RadarListing(Entity, Base):
+    __tablename__ = "radar_listings"
+    __table_args__ = (
+        CheckConstraint("price > 0 AND surface > 0", name="radar_dimensions"),
+        CheckConstraint("seller_type IN ('private','professional','unknown')", name="radar_seller"),
+        CheckConstraint("status IN ('active','removed','sold')", name="radar_status"),
+        CheckConstraint("(latitude IS NULL AND longitude IS NULL) OR (latitude IS NOT NULL AND longitude IS NOT NULL AND latitude BETWEEN -85 AND 85 AND longitude BETWEEN -180 AND 180)", name="radar_coordinates"),
+        Index("ix_radar_status_seller", "status", "seller_type"),
+    )
+    title: Mapped[str] = mapped_column(String(180))
+    source_name: Mapped[str] = mapped_column(String(120))
+    source_url: Mapped[str] = mapped_column(String(1500), default="")
+    source_key: Mapped[str | None] = mapped_column(String(64), unique=True)
+    rights_note: Mapped[str] = mapped_column(String(500), default="")
+    provenance: Mapped[str] = mapped_column(String(20), default="manual")
+    city: Mapped[str] = mapped_column(String(100), index=True)
+    district: Mapped[str] = mapped_column(String(120), default="")
+    address: Mapped[str] = mapped_column(String(250), default="")
+    property_type: Mapped[str] = mapped_column(String(40))
+    seller_type: Mapped[str] = mapped_column(String(20), default="unknown")
+    status: Mapped[str] = mapped_column(String(20), default="active")
+    price: Mapped[Decimal] = mapped_column(Numeric(14, 2))
+    surface: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+    rooms: Mapped[int | None] = mapped_column(Integer)
+    published_on: Mapped[date | None] = mapped_column(Date)
+    observed_on: Mapped[date] = mapped_column(Date)
+    latitude: Mapped[Decimal | None] = mapped_column(Numeric(10, 6))
+    longitude: Mapped[Decimal | None] = mapped_column(Numeric(10, 6))
+    description: Mapped[str] = mapped_column(Text, default="")
+    search_text: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class RadarPrice(Entity, Base):
+    __tablename__ = "radar_prices"
+    __table_args__ = (CheckConstraint("price > 0", name="radar_history_price"), Index("ix_radar_prices_listing_created", "listing_id", "created_at"))
+    listing_id: Mapped[str] = mapped_column(ForeignKey("radar_listings.id", ondelete="CASCADE"))
+    price: Mapped[Decimal] = mapped_column(Numeric(14, 2))
+    observed_on: Mapped[date] = mapped_column(Date)
+    note: Mapped[str] = mapped_column(String(500), default="")
+
+
+class Prospect(Entity, Base):
+    __tablename__ = "prospects"
+    __table_args__ = (CheckConstraint("stage IN ('qualified','contacted','replied','appointment','estimate','won','excluded')", name="prospect_stage"),
+                     CheckConstraint("permission IN ('unknown','declared','refused')", name="prospect_permission"))
+    listing_id: Mapped[str] = mapped_column(ForeignKey("radar_listings.id", ondelete="RESTRICT"), unique=True)
+    stage: Mapped[str] = mapped_column(String(20), default="qualified", index=True)
+    permission: Mapped[str] = mapped_column(String(20), default="unknown")
+    permission_note: Mapped[str] = mapped_column(String(1000), default="")
+    opposed: Mapped[bool] = mapped_column(Boolean, default=False)
+    notes: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class ProspectActivity(Entity, Base):
+    __tablename__ = "prospect_activities"
+    __table_args__ = (CheckConstraint("kind IN ('initial','followup','reply','refusal','appointment','estimate','mandate','note')", name="prospect_activity_kind"),
+                     Index("ix_prospect_activity_prospect_date", "prospect_id", "occurred_at"))
+    prospect_id: Mapped[str] = mapped_column(ForeignKey("prospects.id", ondelete="CASCADE"))
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    kind: Mapped[str] = mapped_column(String(20))
+    channel: Mapped[str] = mapped_column(String(20))
+    message: Mapped[str] = mapped_column(Text)
+    evidence: Mapped[str] = mapped_column(String(1000), default="")
+
+
+class OutlookSettings(Base):
+    __tablename__ = "outlook_settings"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    client_id: Mapped[str] = mapped_column(String(36), default="")
+    tenant: Mapped[str] = mapped_column(String(36), default="common")
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
 class CalendarEvent(Entity, Base):
     __tablename__ = "calendar_events"
     __table_args__ = (CheckConstraint("ends_at > starts_at", name="calendar_dates"),

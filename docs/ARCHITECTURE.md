@@ -92,7 +92,19 @@ Les autres entités du cahier des charges seront introduites avec les services q
 
 La vérification initiale du format n’est pas un antivirus. Un scan documentaire, les limites de requête au reverse proxy, la supervision et le chiffrement des volumes restent nécessaires avant hébergement de données réelles. Les journaux applicatifs ne sont pas un stockage d’audit immuable certifié.
 
-## Contrats d’intégration futurs
+## Radar, suivi et carte (0.7)
+
+`radar.py` et `radar_schemas.py` séparent les annonces déclarées du portefeuille commercial. La migration `20261022_radar` crée `radar_listings`, `radar_prices`, `prospects`, `prospect_activities` et `outlook_settings`. Les clés étrangères sont indexées ou uniques ; versions de dossiers, contraintes et transactions empêchent les écrasements concurrents et imports partiels. La clé canonique SHA-256 d’URL ignore fragments et paramètres utm, préserve les identifiants de requête et refuse un doublon exact. Aucune URL n’est récupérée par le backend.
+
+Le CSV est analysé et validé avant écriture, puis importé après confirmation des droits. Les doublons sont ignorés sans fusion. Les prix modifiés créent des observations appendues ; le journal d’audit conserve aussi prix/statut avant et après. Les listes sont paginées ; les événements nécessaires au résumé des prospects sont regroupés dans une requête, sans charger tous les messages de chaque suivi. Le détail affiche les 200 dernières activités, tout en conservant les précédentes et leurs effets sur les contrôles.
+
+Une activité de prospection est une déclaration utilisateur, jamais une preuve technique d’envoi. Son UUID protège les nouvelles tentatives identiques ; les écritures concurrentes sont contrôlées par version. Les séquences excluent les professionnels, les vendeurs inconnus, les annonces retirées et les oppositions pour les déclarations de contact/relance. Les compteurs utilisent les bornes UTC du jour civil Europe/Paris. Le plafond de campagnes ne sera appliqué qu’avec un futur adaptateur d’envoi confirmé.
+
+MapLibre et son worker ESM sont empaquetés dans le client ; aucune bibliothèque ni police n’est chargée depuis un CDN. Le module JS est chargé à l’ouverture de la carte. Les positions restent locales, sur un fond neutre par défaut. L’option OpenStreetMap ajoute seulement les tuiles raster du domaine autorisé par CSP, avec attribution et cache du navigateur ; pas de préchargement ni téléchargement hors ligne. Le client Windows identifie l’application dans son User-Agent. Les marqueurs utilisent du texte DOM, sans injection HTML des annonces. Les tests interceptent les tuiles et ne contactent pas OSM.
+
+`outlook_setup.py` conserve seulement le client ID et le locataire d’une future application publique. Les autorités sont limitées aux audiences Microsoft connues ou à un UUID ; aucun secret client, jeton ni mot de passe Microsoft n’est stocké. Les états `connected`, `can_send` et `authorization_available` restent faux.
+
+## Intégrations externes
 
 Les connexions affichées par `/api/settings` ont toutes `can_send=false`. Le client ne dispose d’aucune route d’envoi. Les prochains connecteurs devront retourner un résultat technique vérifiable, distinguer `not_configured`, `blocked`, `ready` et `error`, et journaliser les autorisations et les réponses du fournisseur.
 

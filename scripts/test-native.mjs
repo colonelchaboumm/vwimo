@@ -58,6 +58,7 @@ try {
       WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: "--remote-debugging-port=9223",
       WEBVIEW2_USER_DATA_FOLDER: path.join(root, ".local/native-webview-test"),
       IMMO_DESKTOP_DATA_DIR: runDir,
+      IMMO_DESKTOP_TEST_INSTANCE: "1",
     },
   );
   const endpoint = await waitFor("http://127.0.0.1:9223/json/version", native);
@@ -245,9 +246,66 @@ try {
     .getByRole("button", { name: "Fermer", exact: true })
     .first()
     .click();
+  await page
+    .locator("nav")
+    .getByRole("button", { name: "Radar immobilier", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Ajouter une annonce", exact: true })
+    .click();
+  await page
+    .getByLabel("Titre de l’annonce", { exact: true })
+    .fill("Annonce native locale");
+  await page
+    .getByLabel("Source déclarée", { exact: true })
+    .fill("Fiche de test native");
+  await page.getByLabel("Commune", { exact: true }).fill("Annecy");
+  await page.getByLabel("Prix affiché (€)", { exact: true }).fill("350000");
+  await page.getByLabel("Surface (m²)", { exact: true }).fill("70");
+  await page
+    .getByLabel("Type de vendeur", { exact: true })
+    .selectOption("private");
+  await page.getByLabel("Latitude (facultatif)", { exact: true }).fill("45.90");
+  await page.getByLabel("Longitude (facultatif)", { exact: true }).fill("6.12");
+  await page
+    .getByRole("button", { name: "Enregistrer l’annonce", exact: true })
+    .click();
+  await expect(page.locator(".radar-card")).toContainText(
+    "Annonce native locale",
+  );
+  await page
+    .getByRole("button", { name: "Ajouter en prospection", exact: true })
+    .click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "Prospect ajouté" }),
+  ).toBeVisible();
+  await page
+    .locator("nav")
+    .getByRole("button", { name: "Prospection", exact: true })
+    .click();
+  await expect(page.locator(".radar-card")).toContainText(
+    "Annonce native locale",
+  );
+  await page
+    .locator("nav")
+    .getByRole("button", { name: "Carte immobilière", exact: true })
+    .click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "Carte affichée" }),
+  ).toBeVisible({ timeout: 15000 });
+  await expect(
+    page.getByRole("button", {
+      name: "Annonce : Annonce native locale · Annecy",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("checkbox", {
+      name: "Afficher le fond OpenStreetMap (connexion internet)",
+    }),
+  ).not.toBeChecked();
   assert.deepEqual(errors, []);
   console.log(
-    "WebView2 : compte, dossiers, agenda, PDF, Charlie local et stockage DPAPI d’une clé fictive réussis. Aucun appel OpenAI réel.",
+    "WebView2 : compte, dossiers, agenda, PDF, Charlie, DPAPI, radar, prospection et carte locale réussis. Aucun appel OpenAI ni requête de tuile OSM.",
   );
 } catch (error) {
   console.error(error);

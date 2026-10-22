@@ -18,9 +18,17 @@ Livré en 0.6 : Charlie en lecture seule, contexte de dossier affiché, conversa
 
 À poursuivre : outils d’action de Charlie avec permissions et confirmations ; import et analyse de fiches/documents ; brouillons et envois Outlook confirmés ; OAuth/MSAL avec stockage sécurisé des tokens ; synchronisation d’agenda, récurrences et notifications Windows ; connecteurs DVF, corrections et analyse assistée des estimations.
 
+La version 0.7 ajoute la préparation Outlook dans les paramètres : guide de création Entra et stockage local du client ID/locataire. Elle ne connecte pas le compte Microsoft ; OAuth, consentement Graph et synchronisation restent à implémenter et tester avec une inscription réelle.
+
 ## Phase 3 — prospection et carte
 
-Connecteurs sous droits vérifiés, radar et prix historiques, dédoublonnage, qualification, cartographie. Moteur de campagnes avec consentements/oppositions, réservations atomiques du quota quotidien de 17 en Europe/Paris, idempotence, une relance après 7 jours maximum par défaut, arrêt immédiat et preuve technique d’envoi.
+Livré en 0.7 : radar par saisie et CSV, import prévisualisé et confirmé, URL répétées ignorées sans écrasement, observations de prix, baisses depuis le prix initial, ancienneté déclarée et rapprochement de doublons possibles. Ces données restent séparées des mandats.
+
+Suivi local de prospects particuliers actifs, justificatifs d’autorisation déclarés, oppositions et journal d’actions effectuées hors outil. Échéance de relance calculée après 7 jours, au maximum une relance dans la séquence ; arrêt des suggestions après réponse, résultat ou opposition. Compteurs déclaratifs en Europe/Paris. Le repère quotidien de 17 ne constitue pas un quota d’envoi appliqué : aucun canal d’envoi n’est encore intégré.
+
+Carte MapLibre des coordonnées saisies/importées dans les annonces actives, sans géocodage. Fond OpenStreetMap activé uniquement à la demande, avec attribution ; liste de repli et fond neutre sans appel externe. La carte ne couvre pas encore les mandats, estimations et ventes.
+
+À poursuivre : connecteurs sous droits vérifiés, collecte/détection périodique, qualification IA explicitement distinguée des règles, comparaisons de marché sourcées, géocodage, carte transversale et moteur de campagnes. Ce moteur devra réserver atomiquement le quota quotidien de 17 en Europe/Paris, vérifier les conditions du canal avant chaque envoi, gérer l’idempotence et enregistrer une confirmation technique.
 
 Le drapeau général de prospection est enregistré dès la phase 1, mais aucun connecteur ne dispose de permission d’envoi. Il faudra vérifier les droits, le canal et la base légale avant chaque exécution, y compris les relances.
 

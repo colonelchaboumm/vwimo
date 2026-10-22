@@ -44,6 +44,8 @@ GRANT SELECT, INSERT, UPDATE ON estimates TO immo_app;
 GRANT SELECT, INSERT, UPDATE, DELETE ON calendar_events TO immo_app;
 GRANT SELECT, INSERT, UPDATE ON ai_settings TO immo_app;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ai_conversations, ai_turns TO immo_app;
+GRANT SELECT, INSERT, UPDATE ON radar_listings, prospects, outlook_settings TO immo_app;
+GRANT SELECT, INSERT ON radar_prices, prospect_activities TO immo_app;
 ```
 
 Les UUID sont générés dans le backend ; aucune séquence métier n’est nécessaire. Le rôle d’administration conserve la création et la maintenance des comptes. Les droits seront revus à chaque ajout de tables.
@@ -92,6 +94,12 @@ Pour une sauvegarde strictement coordonnée, mettre l’API en maintenance penda
 L’outil SQLite refuse PostgreSQL : la procédure PostgreSQL est documentée, mais son orchestration de sauvegarde/restauration n’est pas automatisée dans cette livraison.
 
 ## Mise à jour
+
+Les sauvegardes 0.7 incluent annonces radar, observations de prix, activités de prospection et configuration publique Outlook. Leur suppression/rétention automatique n’est pas implémentée. L’import CSV est local et ne valide pas les licences des données : conserver la preuve des droits nécessaires. Aucun portail n’est interrogé et aucune tâche d’envoi n’est installée.
+
+Le fond cartographique facultatif utilise le service raster public OpenStreetMap, à la demande de l’utilisateur. Respecter [sa politique de tuiles](https://operations.osmfoundation.org/policies/tiles/) : attribution visible, identification du client, cache HTTP du navigateur et aucune collecte en masse. Le service n’offre pas de disponibilité garantie ; la liste et le fond neutre restent utilisables sans lui. Pour une diffusion importante, prévoir un fournisseur adapté ou des tuiles hébergées avant d’étendre l’usage.
+
+Les tests Windows définissent `IMMO_DESKTOP_TEST_INSTANCE=1` et un `IMMO_DESKTOP_DATA_DIR` isolé ; cela désactive seulement le verrou de lancement unique du processus de test. Le lancement ordinaire conserve sa protection. Ne pas utiliser ces variables avec l’espace personnel pour lancer deux clients sur une même base.
 
 Procédure initiale manuelle : sauvegarder, arrêter l’API, mettre à jour le code et les dépendances verrouillées, exécuter `alembic upgrade head`, vérifier les tests, redémarrer et vérifier `/api/health`. Une régression doit être traitée par restauration sur une nouvelle base ou migration corrective, pas par un downgrade aveugle.
 

@@ -1,3 +1,16 @@
+# Livraison 0.7 — 22 octobre 2026
+
+- Backend : suite de 97 tests sur SQLite ; 96 réussis et 1 ignoré sur PostgreSQL. Les 16 nouveaux tests couvrent radar/imports, URL canoniques, transactions sans écriture partielle, historique des prix, conflits concurrents, rôles, séquences de prospection, arrêt, compteurs Europe/Paris et préparation Outlook.
+- Interface : 26 parcours navigateur. Nouveaux parcours : prix et historique, import prévisualisé avec confirmation des droits, URL répétées sans écrasement, autorisations/journal/opposition, coordonnées cartographiques et préparation Outlook persistante sans état de connexion fictif.
+- MapLibre : module JS chargé à la demande, worker ESM inclus dans le build. Aucune tuile externe avant activation du fond ; les tests interceptent les requêtes après activation, sans solliciter OSM. Les réponses de tuiles sont simulées, le service public réel n’a pas été testé automatiquement. Captures radar et carte vérifiées visuellement ; absence de débordement mobile vérifiée sur la prospection.
+- Windows/WebView2 : compte local, documents, agenda, rapport PDF, Charlie, clé fictive DPAPI, annonce radar, création du suivi de prospect et carte locale réussis. Une instance de test isolée peut coexister avec l’application installée, sans fermer celle-ci ni toucher à ses données.
+- Préparation Outlook : champs client ID/locataire validés et enregistrés localement, propriétaires uniquement, conflits de versions détectés, secrets clients et autorités arbitraires refusés. Aucun OAuth, consentement, accès Graph ou envoi réalisé.
+- TypeScript/Vite et compilation Tauri réussis, installateur NSIS et signature produits. Migration `20261022_radar` et sauvegarde avant migration locale conservées.
+
+Le radar ne collecte pas de portail ; les prix sont déclarés. Le journal n’est pas une preuve technique d’envoi et le repère quotidien de 17 n’est pas un quota d’envoi effectivement réservé. Connecteurs, campagnes, géocodage, carte transversale, connexion Microsoft réelle et finance restent à poursuivre. Installation sur machine vierge et remplacement effectif d’une ancienne installation par l’updater restent à vérifier.
+
+---
+
 # Livraison 0.6 — 22 octobre 2026
 
 - Backend : 81 tests réussis sur SQLite ; 80 réussis et 1 ignoré sur PostgreSQL. Contrôles de propriété des conversations, rôles, consentement externe, contexte périmé, idempotence, réservation concurrente avant appel facturable et conservation des erreurs.

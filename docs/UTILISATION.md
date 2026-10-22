@@ -64,13 +64,45 @@ Choisir ensuite le moteur OpenAI et confirmer la transmission avant chaque deman
 
 Charlie reste en lecture seule : aucun dossier n’est modifié, aucun e-mail envoyé, aucune annonce publiée. Relire et compléter chaque brouillon avant utilisation. Les tests de livraison simulent les réponses OpenAI ; la connexion avec votre propre clé reste à vérifier dans l’application.
 
-## Importer des documents
+## Radar immobilier
+
+**Ajouter une annonce** permet d’enregistrer une source, son URL si disponible, une commune, les caractéristiques connues et le prix affiché. Choisir le type de vendeur explicitement ; une annonce à vérifier n’est pas considérée comme un particulier. Renseigner publication et observation seulement si connues. La date d’observation ne peut pas précéder la dernière observation enregistrée. Aucune source n’est consultée automatiquement et aucune fiche n’entre dans les mandats.
+
+Modifier le prix ajoute une observation ; **Voir les observations** conserve les prix précédents et leurs justifications. La baisse affichée compare le prix actuel au premier prix enregistré, sans vérification de marché. Les doublons possibles reposent sur même commune/type et surface à ±5 % : vérifier les annonces, aucune fusion n’est effectuée. La recherche couvre titre, source, commune, quartier et adresse, sans accents ; les listes sont paginées.
+
+**Importer CSV** fournit un modèle UTF-8 à compléter (séparateur point-virgule ou virgule, 200 annonces maximum, fichier de 250 Ko maximum). `title`, `source_name`, `source_url`, `city`, `price`, `surface` sont obligatoires. Les valeurs de `seller_type` sont `private`, `professional`, `unknown` ; celles de `status` sont `active`, `removed`, `sold`. Les dates utilisent AAAA-MM-JJ. Les décimales acceptent le point ou la virgule ; avec un CSV séparé par virgule, entourer les nombres décimaux français de guillemets. Ne pas ajouter de devise au prix.
+
+Prévisualiser, corriger toutes les erreurs puis confirmer les droits d’importation. Tant qu’une erreur demeure, rien n’est enregistré. Une URL déjà présente, ou répétée dans le fichier, est ignorée sans écrasement du prix ; les paramètres `utm_` et fragments n’interviennent pas dans cette comparaison. Pour actualiser un prix existant, modifier explicitement l’annonce. Les autres champs de la ligne ignorée ne sont pas fusionnés.
+
+## Prospection et journal local
+
+Dans le radar, **Ajouter en prospection** est réservé aux annonces actives de particuliers. Un seul suivi est créé par annonce. Aucun contact CRM, mandat ni envoi n’est créé par cette action. Ouvrir **Prospection**, puis le suivi : renseigner la justification d’autorisation par canal et les notes, ou déclarer une opposition. Une justification saisie ne vaut pas vérification automatique de sa conformité.
+
+Le journal décrit les actions déjà effectuées hors outil, avec date Europe/Paris, canal, compte rendu et preuve/référence. Il ne déclenche pas l’action décrite. Le premier contact et la relance exigent une annonce active de particulier, une justification d’autorisation, aucune opposition et une référence d’action. Après une réponse, un refus ou un résultat, utiliser les notes de suivi : la séquence de premier contact/relance est arrêtée. Un refus enregistre l’opposition.
+
+Une échéance à examiner est calculée 7 jours après le premier contact déclaré, pour une seule relance. L’arrêt général de prospection masque ces suggestions ; aucun envoi n’est planifié. Les compteurs quotidiens se fondent sur les dates déclarées en Europe/Paris. Le repère de 17 n’empêche pas de consigner des actions historiques réellement effectuées au-delà : ce n’est pas une preuve d’application d’un quota d’envoi. Les rendez-vous sont comptés par prospect distinct ayant une déclaration de rendez-vous, même si le suivi a progressé ensuite.
+
+Les 200 dernières activités d’un suivi sont affichées ; les plus anciennes restent dans la base et les contrôles. Les déclarations de résultat n’ajoutent pas automatiquement de rendez-vous, estimation ou mandat dans les autres modules.
+
+## Carte des pistes
+
+La carte affiche uniquement les annonces actives du radar dont latitude et longitude ont été saisies/importées ensemble. Aucune adresse n’est géocodée automatiquement. Filtrer par texte pour réduire les points (1 000 maximum). Les annonces sans coordonnées sont comptées mais non placées ; la liste conserve les positions déclarées.
+
+Par défaut, MapLibre montre les points sur un fond neutre local. **Afficher le fond OpenStreetMap** charge les tuiles en ligne et transmet l’adresse IP et les zones consultées au service cartographique ; les titres, coordonnées de contacts et dossiers ne lui sont pas envoyés. Le fond n’est pas téléchargé pour un usage hors ligne. Sans réseau ou sans WebGL, consulter la liste. Voir [la politique du service de tuiles](https://operations.osmfoundation.org/policies/tiles/).
+
+## Fichiers documentaires
 
 Choisir **Ajouter un document**, puis un fichier et sa catégorie. Associer éventuellement un contact et/ou un mandat. Les formats pris en charge sont PDF, DOCX, XLSX, PNG et JPEG, dans la limite de 15 Mo.
 
 Le téléchargement nécessite une session valide. Une empreinte d’intégrité est enregistrée et vérifiée avant téléchargement : un fichier altéré est bloqué. L’analyse IA, l’OCR, l’édition et la suppression documentaire ne sont pas encore disponibles.
 
 ## Recherche et préférences
+
+### Préparer Outlook
+
+Dans **Paramètres → Préparer Outlook**, suivre le guide Microsoft Entra intégré. Aucun identifiant n’est nécessaire pour consulter les étapes. Quand l’application Entra est créée, enregistrer son client ID et le locataire correspondant aux types de comptes choisis (`common`, `organizations`, `consumers` ou UUID d’une organisation). Ces identifiants ne sont pas des secrets ; aucun mot de passe Microsoft ni secret client n’est demandé.
+
+L’enregistrement est réservé au propriétaire/administrateur. Il ne déclenche ni authentification Microsoft, ni demande de consentement Graph, ni synchronisation ou envoi. L’état reste **Non connecté à Microsoft**. La connexion interactive et le stockage sécurisé des jetons seront ajoutés dans une prochaine livraison. La création des inscriptions et les accès disponibles dépendent de votre organisation Microsoft.
 
 `Ctrl+K` place le curseur dans la recherche globale. Elle recherche les contacts, les mandats, les adresses saisies et les noms de fichiers déjà chargés. L’icône lune/soleil change le thème, conservé sur cet appareil.
 
