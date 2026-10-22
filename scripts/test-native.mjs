@@ -116,6 +116,9 @@ try {
   await page.getByRole("button", { name: "Vendeurs", exact: true }).click();
   await page.getByRole("button", { name: "Nouveau contact" }).click();
   await page.getByLabel("Nom complet").fill("Vendeur natif WebView2");
+  await page
+    .getByLabel("E-mail", { exact: true })
+    .fill("vendeur-native@example.com");
   await page.getByRole("button", { name: "Enregistrer le contact" }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(
@@ -442,9 +445,101 @@ try {
     path: "docs/screenshots/pilotage-webview2.png",
     fullPage: true,
   });
+  await page
+    .locator("nav")
+    .getByRole("button", { name: "Marketing & newsletters", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Préférences newsletter", exact: true })
+    .click();
+  await page
+    .getByLabel("Contact newsletter", { exact: true })
+    .selectOption({
+      label: "Vendeur natif WebView2 · vendeur-native@example.com",
+    });
+  await page
+    .getByRole("button", {
+      name: "Gérer la préférence newsletter",
+      exact: true,
+    })
+    .click();
+  await page
+    .getByLabel("Préférence newsletter", { exact: true })
+    .selectOption("declared");
+  await page
+    .getByLabel("Justification de la préférence newsletter", { exact: true })
+    .fill("Autorisation fictive pour le test natif.");
+  await page
+    .getByRole("button", {
+      name: "Enregistrer la préférence newsletter",
+      exact: true,
+    })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Nouveau brouillon", exact: true })
+    .click();
+  await page
+    .getByLabel("Référence de campagne", { exact: true })
+    .fill("NL-NATIVE");
+  await page
+    .getByLabel("Nom du brouillon", { exact: true })
+    .fill("Lettre fictive native");
+  await page
+    .getByLabel("Segment newsletter", { exact: true })
+    .selectOption("sellers");
+  await page
+    .getByLabel("Objet du message", { exact: true })
+    .fill("Bonjour {nom}");
+  await page
+    .getByLabel("Nom de l’expéditeur", { exact: true })
+    .fill("Agence fictive native");
+  await page
+    .getByLabel("E-mail de l’expéditeur", { exact: true })
+    .fill("agence-native@example.com");
+  await page
+    .getByLabel("Texte de la newsletter", { exact: true })
+    .fill("Bonjour {nom}, contenu fictif accentué.");
+  await page
+    .getByLabel("Signature, identité et consignes de désinscription", {
+      exact: true,
+    })
+    .fill("Agence fictive. Désinscription par réponse à ce message.");
+  await page
+    .getByRole("button", { name: "Enregistrer le brouillon", exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Brouillons newsletter", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Prévisualiser et préparer", exact: true })
+    .click();
+  await expect(page.locator(".marketing-preview")).toContainText(
+    "Bonjour Vendeur natif WebView2",
+  );
+  await page
+    .getByRole("checkbox", {
+      name: "J’ai vérifié le destinataire, son autorisation newsletter, l’expéditeur et le contenu de ce fichier individuel.",
+      exact: true,
+    })
+    .check();
+  const newsletterDownload = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Préparer le fichier EML", exact: true })
+    .click();
+  const newsletterFile = await newsletterDownload;
+  const newsletterContent = await readFile(await newsletterFile.path(), "utf8");
+  assert(newsletterContent.includes("X-Unsent: 1"));
+  assert(newsletterContent.includes("vendeur-native@example.com"));
+  await expect(page.locator(".marketing-history li")).toHaveCount(1);
+  await page.screenshot({
+    path: "docs/screenshots/newsletter-webview2.png",
+    fullPage: true,
+  });
   assert.deepEqual(errors, []);
   console.log(
-    "WebView2 : compte, dossiers, agenda, PDF, Charlie, DPAPI, radar, carte, finance, partenaires et pilotage réussis. Aucun appel OpenAI ni requête de tuile OSM.",
+    "WebView2 : compte, dossiers, agenda, PDF, Charlie, DPAPI, radar, carte, finance, partenaires, pilotage et newsletter EML réussis. Aucun envoi d’e-mail ni appel OpenAI ni requête de tuile OSM.",
   );
 } catch (error) {
   console.error(error);

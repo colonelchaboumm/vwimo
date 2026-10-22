@@ -433,3 +433,61 @@ class ReferralEvent(Entity, Base):
     referral_id: Mapped[str] = mapped_column(ForeignKey("referrals.id", ondelete="RESTRICT"))
     actor_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"), index=True)
     changes: Mapped[dict] = mapped_column(JSON)
+
+
+class MarketingGuard(Base):
+    __tablename__ = "marketing_guard"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class MarketingPermission(Base):
+    __tablename__ = "marketing_permissions"
+    __table_args__ = (CheckConstraint("state IN ('unknown','declared','refused','withdrawn')", name="marketing_permission_state"),)
+    contact_id: Mapped[str] = mapped_column(ForeignKey("contacts.id", ondelete="RESTRICT"), primary_key=True)
+    state: Mapped[str] = mapped_column(String(20), default="unknown")
+    email_snapshot: Mapped[str | None] = mapped_column(String(254))
+    declared_on: Mapped[date | None] = mapped_column(Date)
+    note: Mapped[str] = mapped_column(String(1000), default="")
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class EmailExclusion(Entity, Base):
+    __tablename__ = "email_exclusions"
+    email: Mapped[str] = mapped_column(String(254), unique=True)
+    blocked: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    note: Mapped[str] = mapped_column(String(1000))
+    declared_on: Mapped[date] = mapped_column(Date)
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class Campaign(Entity, Base):
+    __tablename__ = "campaigns"
+    __table_args__ = (CheckConstraint("segment IN ('buyers','sellers','professional','all')", name="campaign_segment"),)
+    reference: Mapped[str] = mapped_column(String(40), unique=True)
+    title: Mapped[str] = mapped_column(String(180))
+    segment: Mapped[str] = mapped_column(String(20), default="buyers")
+    subject: Mapped[str] = mapped_column(String(180), default="")
+    body: Mapped[str] = mapped_column(Text, default="")
+    sender_name: Mapped[str] = mapped_column(String(180), default="")
+    sender_email: Mapped[str | None] = mapped_column(String(254))
+    reply_to: Mapped[str | None] = mapped_column(String(254))
+    footer: Mapped[str] = mapped_column(Text, default="")
+    archived: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    __mapper_args__ = {"version_id_col": version}
+
+
+class CampaignExport(Entity, Base):
+    __tablename__ = "campaign_exports"
+    __table_args__ = (Index("ix_campaign_export_date", "campaign_id", "created_at"),)
+    campaign_id: Mapped[str] = mapped_column(ForeignKey("campaigns.id", ondelete="RESTRICT"))
+    contact_id: Mapped[str] = mapped_column(ForeignKey("contacts.id", ondelete="RESTRICT"), index=True)
+    recipient_email: Mapped[str] = mapped_column(String(254))
+    campaign_version: Mapped[int] = mapped_column(Integer)
+    audience_digest: Mapped[str] = mapped_column(String(64))
+    content: Mapped[str] = mapped_column(Text)
+    sha256: Mapped[str] = mapped_column(String(64))

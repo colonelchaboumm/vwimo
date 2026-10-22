@@ -50,6 +50,9 @@ GRANT SELECT, INSERT, UPDATE ON sale_transactions, commission_plans, incomes TO 
 GRANT SELECT, INSERT ON income_payments TO immo_app;
 GRANT SELECT, INSERT, UPDATE ON partners, referrals TO immo_app;
 GRANT SELECT, INSERT ON referral_events TO immo_app;
+GRANT SELECT, UPDATE ON marketing_guard TO immo_app;
+GRANT SELECT, INSERT, UPDATE ON marketing_permissions, email_exclusions, campaigns TO immo_app;
+GRANT SELECT, INSERT ON campaign_exports TO immo_app;
 ```
 
 Les UUID sont générés dans le backend ; aucune séquence métier n’est nécessaire. Le rôle d’administration conserve la création et la maintenance des comptes. Les droits seront revus à chaque ajout de tables.
@@ -98,6 +101,8 @@ Pour une sauvegarde strictement coordonnée, mettre l’API en maintenance penda
 L’outil SQLite refuse PostgreSQL : la procédure PostgreSQL est documentée, mais son orchestration de sauvegarde/restauration n’est pas automatisée dans cette livraison.
 
 ## Mise à jour
+
+La migration 0.10 `20261022_marketing` ajoute brouillons, préférences newsletter, exclusions, exports et compteur technique de concurrence. Aucun accord ni adresse commerciale fictive n’est créé par la migration. Les exports EML sont conservés localement avec leur contenu personnalisé, destinataire et empreinte SHA-256 ; ils figurent donc dans les sauvegardes de la base. La rétention/effacement de ces données reste à implémenter. Les fichiers déjà téléchargés ne peuvent pas être rappelés ou effacés automatiquement par l’outil. Aucun service SMTP, Graph ou suivi d’ouverture n’est utilisé.
 
 La migration 0.9 `20261022_partners` ajoute l’annuaire et les dossiers de mise en relation ainsi que le lien nullable des revenus. Une reconstruction SQLite de la table des revenus préserve les lignes et leurs versements ; un test vérifie le passage depuis la révision 0.8 avec des montants existants, les clés étrangères et la sauvegarde avant migration. Les autorisations et transmissions restent des déclarations de l’utilisateur, sans service d’envoi. Les snapshots et historiques contiennent des données personnelles et sont inclus dans les sauvegardes ; leur politique de rétention/effacement reste à implémenter.
 

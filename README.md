@@ -1,10 +1,10 @@
 # IMMO PILOT AI
 
-Poste de travail immobilier pour Annecy et le Grand Annecy. **Version 0.9 — partenaires, recommandations et pilotage annuel.**
+Poste de travail immobilier pour Annecy et le Grand Annecy. **Version 0.10 — newsletters locales, préférences et exclusions.**
 
 ## Installer sous Windows
 
-Télécharger le fichier `IMMO-PILOT-AI_0.9.0_x64-setup.exe` depuis [la dernière version](https://github.com/colonelchaboumm/vwimo/releases/latest), puis l’installer et ouvrir l’application. Le backend Python est inclus et lancé automatiquement. Aucun terminal, Node ou Python à installer séparément.
+Télécharger le fichier `IMMO-PILOT-AI_0.10.0_x64-setup.exe` depuis [la dernière version](https://github.com/colonelchaboumm/vwimo/releases/latest), puis l’installer et ouvrir l’application. Le backend Python est inclus et lancé automatiquement. Aucun terminal, Node ou Python à installer séparément.
 
 Cette première installation active les mises à jour futures : une icône de téléchargement devient bleue lorsqu’une version est disponible. Cliquer dessus, lire les nouveautés puis choisir **Installer et redémarrer**. Les paquets sont vérifiés par signature avant installation ; les données restent dans le profil Windows. [Détails et procédure de publication](docs/MISES-A-JOUR.md).
 
@@ -12,6 +12,8 @@ Au premier lancement, créez votre compte local avec votre nom, votre e-mail et 
 
 ## Fonctionnalités
 
+- Marketing & newsletters : brouillons locaux, segments de contacts, personnalisation du nom, aperçu texte et fichiers EML individuels confirmés. Aucun envoi, suivi d’ouverture ou connexion Outlook.
+- Préférences newsletter spécifiques, exclusions globales par adresse, dédoublonnage, changement d’adresse à revérifier et levée d’exclusion réservée au propriétaire/administrateur. Historique des fichiers préparés distinct des envois.
 - Annuaire des partenaires et dossiers de courtage, recommandation ou service : contacts liés, autorisation déclarée, mise en relation, financement, résultat, prochaine action et historique. Archivage des partenaires sans suppression des dossiers.
 - Liaison des revenus aux mises en relation ; consultation des prévisions et encaissements existants sans les dupliquer.
 - Pilotage annuel : ventes déclarées par date d’acte, délai compromis-acte avec nombre d’échantillons, journal de prospection, agenda et revenus mensuels/par origine. Portefeuille actuel affiché séparément.

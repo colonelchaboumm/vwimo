@@ -1,3 +1,15 @@
+# Livraison 0.10 — 22 octobre 2026
+
+- Backend : 139 cas au total. Suite initiale de 138 tests réussie sur SQLite, avec 137 réussis et 1 ignoré sur PostgreSQL ; les dix cas newsletter sont revérifiés après la correction des adresses internationalisées. Ils couvrent autorisation distincte, absence d’accord implicite, préférences datées, dédoublonnage, refus/retrait sur une adresse partagée, changement d’e-mail, exclusions conservées, levée administrateur confirmée, brouillons incomplets/archivés, versions et en-têtes, droits lecteur, contenu UTF-8, fichier individuel et reprise idempotente. Un test synchronise un export et un retrait avant leur flush : un seul peut être validé. Une partie locale Unicode n’est jamais transformée en un autre destinataire ASCII.
+- Interface : 31 parcours réussis. Nouveau parcours création contact → brouillon → absence d’accord → accord spécifique → aperçu → refus 409 simulé → nouvelle confirmation → fichier EML → retrait → préparation bloquée. Les contrôles ordinaires et fichiers utilisent la véritable API ; le conflit d’interface est simulé. Profil lecteur et exclusions à 390 pixels vérifiés, captures inspectées visuellement.
+- Format : analyse d’un EML par le parseur Python, sujet/nom personnalisés, un destinataire sans Cc/Bcc, texte brut, contenu ressemblant à du HTML conservé comme texte, accents encodés, `X-Unsent` et consigne de désinscription par réponse. L’ouverture dans chaque logiciel de messagerie et l’envoi effectif ne sont pas vérifiés.
+- Migration : ajout des tables marketing sans accord fictif ; sauvegarde avant migration locale conservée. L’aperçu répond en 0.10.0. Les contrôles existants de conservation des dossiers, revenus et versements restent réussis.
+- Windows/WebView2 : suite native réussie avec préférence newsletter, brouillon, aperçu personnalisé et téléchargement effectif d’un EML local depuis le backend embarqué. Aucun logiciel de messagerie lancé ni message envoyé. TypeScript/Vite, Tauri, installateur NSIS et signature updater générés.
+
+Aucun message envoyé, aucun pixel ou appel SMTP/Graph. Les déclarations d’accord et l’identité de l’expéditeur ne sont pas vérifiées juridiquement ou par e-mail. Les fichiers déjà exportés ne sont pas révocables, les désinscriptions reçues sont à saisir manuellement. Facturation, fiscalité, campagnes connectées, retouche photo et politique de rétention restent à poursuivre.
+
+---
+
 # Livraison 0.9 — 22 octobre 2026
 
 - Backend : 129 tests réussis sur SQLite. La suite PostgreSQL initiale compte 127 réussis et 1 ignoré ; les neuf cas partenaires/pilotage sont revérifiés après le dernier correctif et le test SQLite supplémentaire de migration financière depuis 0.8 passe également. Les dix nouveaux cas couvrent annuaire, recherche littérale, archivage, autorisation avant mise en relation, snapshot conservé après retrait, suivi historique avec contact archivé, types de dossiers, dates/clôture, historique concurrent, droits lecteur, revenus liés, devis périmés, dates annuelles et passage de schéma avec revenus/versements existants.

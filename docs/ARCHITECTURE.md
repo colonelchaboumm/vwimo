@@ -92,6 +92,18 @@ Les autres entités du cahier des charges seront introduites avec les services q
 
 La vérification initiale du format n’est pas un antivirus. Un scan documentaire, les limites de requête au reverse proxy, la supervision et le chiffrement des volumes restent nécessaires avant hébergement de données réelles. Les journaux applicatifs ne sont pas un stockage d’audit immuable certifié.
 
+## Newsletters locales (0.10)
+
+`20261022_marketing` ajoute `campaigns`, `marketing_permissions` (clé contact), `email_exclusions`, `campaign_exports` et `marketing_guard`. Les clés étrangères sont indexées ou primaires. Le compteur technique commun est modifié par les écritures marketing et les exports ; les objets sont conservés jusqu’au commit pour détecter les changements concurrents de préférences ou de brouillon. L’export modifie aussi la version du contact retenu pour refuser un changement simultané de coordonnées ou son archivage.
+
+L’audience joint les contacts actifs aux préférences spécifiques. Une autorisation déclarée n’est valable pour la préparation que si son adresse mémorisée correspond à l’adresse actuelle. Refus/retraits créent des exclusions pour les adresses actuelle et précédemment autorisée ; les oppositions individuelles bloquent aussi leurs doublons, même archivés. Les adresses sont comparées sans distinction de casse. Une nouvelle déclaration d’accord ne supprime pas une exclusion. La levée globale est réservée aux administrateurs avec motif, date et confirmation ; les refus individuels restent contrôlés séparément.
+
+Le digest d’aperçu couvre le brouillon, les coordonnées/préférences de l’audience et les exclusions. Chaque POST `/download` confirme ce digest, l’éligibilité actuelle et la complétude du brouillon. Les UUID rendent les reprises de téléchargement idempotentes tant que l’aperçu reste actuel ; un retrait empêche même de rejouer un ancien export. Les versions techniques des contacts et du compteur ne font pas partie du digest, pour ne pas invalider un aperçu par son propre export, mais leurs valeurs SQL sérialisent les écritures.
+
+Les fichiers utilisent `EmailMessage` en texte brut UTF-8 encodé quoted-printable, un destinataire unique, `X-Unsent: 1`, un identifiant stable, l’expéditeur déclaré, une adresse de réponse et une désinscription par réponse. Les en-têtes sont validés et le nom du destinataire est nettoyé des contrôles. Les domaines internationalisés sont convertis en ASCII ; les parties locales nécessitant SMTPUTF8 ne sont pas prises en charge. Il n’y a ni HTML actif, pièce jointe, image distante, pixel, SMTP ou Graph. Le contenu et son SHA-256 sont conservés comme préparation locale, sans prétendre à une remise du message.
+
+Segments fondés uniquement sur les types de contacts existants ; plafond explicite de 1 000 contacts par prévisualisation, sans audience tronquée. Brouillons/exclusions paginés par 40, 20 dernières préparations dans l’aperçu. Les destinataires approuvés sont dédoublonnés. Les messages en attente et fichiers hors outil ne peuvent pas être révoqués par l’application.
+
 ## Partenaires et pilotage (0.9)
 
 La migration `20261022_partners` crée `partners`, `referrals`, `referral_events` et ajoute une clé étrangère nullable `incomes.referral_id`. Les références existantes sont conservées, y compris revenus validés et encaissements. Les clés étrangères sont indexées. L’annuaire et les dossiers sont paginés (40, maximum 100), filtrés côté serveur ; la recherche échappe les caractères `%` et `_`. Les partenaires s’archivent sans supprimer leurs liens. La création d’un dossier et la première mise en relation utilisent les versions du partenaire et du contact pour éviter un archivage concurrent non détecté.

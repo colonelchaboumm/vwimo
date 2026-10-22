@@ -64,6 +64,8 @@ import { TransactionsPage } from "./components/finance/TransactionsPage";
 import { FinancePage } from "./components/finance/FinancePage";
 import { PartnersPage } from "./components/partners/PartnersPage";
 import { StatisticsPage } from "./components/partners/StatisticsPage";
+import { MarketingPage } from "./components/marketing/MarketingPage";
+import "./components/marketing/marketing.css";
 import "./components/partners/partners.css";
 import "./components/finance/finance.css";
 import "./components/radar/radar.css";
@@ -84,7 +86,10 @@ import type {
 } from "./types";
 import { kinds, statuses } from "./types";
 
-const navigation = [
+const navigation: {
+  group: string;
+  items: { id: string; label: string; icon: typeof Activity; phase?: number }[];
+}[] = [
   {
     group: "VOTRE QUOTIDIEN",
     items: [
@@ -128,7 +133,6 @@ const navigation = [
         id: "marketing",
         label: "Marketing & newsletters",
         icon: Megaphone,
-        phase: 4,
       },
       { id: "statistics", label: "Statistiques", icon: Activity },
       { id: "documents", label: "Documents", icon: FolderOpen },
@@ -154,6 +158,7 @@ const pageNames: Record<string, string> = {
   transactions: "Transactions",
   finance: "Commissions & revenus",
   referrals: "Courtage & recommandations",
+  marketing: "Marketing & newsletters",
 };
 type Editor =
   | { type: "contact"; item?: Contact; kind?: string }
@@ -261,7 +266,7 @@ function Login({
             Annecy & Grand Annecy
           </div>
         </div>
-        <small>IMMO PILOT AI · Version 0.9 · Votre activité, réunie</small>
+        <small>IMMO PILOT AI · Version 0.10 · Votre activité, réunie</small>
       </div>
       <div className="login-form-wrap">
         <div className="login-form">
@@ -719,21 +724,25 @@ export default function App() {
                 ))}
             </div>
           ))}
-          <details className="future-nav">
-            <summary>
-              Prochaines fonctionnalités <ChevronDown size={14} />
-            </summary>
-            {navigation
-              .flatMap((section) => section.items)
-              .filter((item) => item.phase)
-              .map((item) => (
-                <div className="future-item" key={item.id}>
-                  <item.icon size={16} />
-                  <span>{item.label}</span>
-                  <small>Phase {item.phase}</small>
-                </div>
-              ))}
-          </details>
+          {navigation.some((section) =>
+            section.items.some((item) => item.phase),
+          ) && (
+            <details className="future-nav">
+              <summary>
+                Prochaines fonctionnalités <ChevronDown size={14} />
+              </summary>
+              {navigation
+                .flatMap((section) => section.items)
+                .filter((item) => item.phase)
+                .map((item) => (
+                  <div className="future-item" key={item.id}>
+                    <item.icon size={16} />
+                    <span>{item.label}</span>
+                    <small>Phase {item.phase}</small>
+                  </div>
+                ))}
+            </details>
+          )}
         </nav>
         <div className="sidebar-bottom">
           <button
@@ -979,6 +988,16 @@ export default function App() {
                 />
               )}
               {page === "map" && <PropertyMapPage />}
+              {page === "marketing" && (
+                <MarketingPage
+                  contacts={data.contacts}
+                  role={account.role}
+                  onEditing={setCommercialEditing}
+                  onChanged={() => {
+                    void reload();
+                  }}
+                />
+              )}
               {page === "referrals" && (
                 <PartnersPage
                   contacts={data.contacts}
@@ -1434,7 +1453,7 @@ export default function App() {
                         <dt>Fuseau horaire</dt>
                         <dd>Europe/Paris</dd>
                         <dt>Version</dt>
-                        <dd>0.9.0 · Partenaires et pilotage</dd>
+                        <dd>0.10.0 · Newsletters et préférences</dd>
                       </dl>
                       <p>
                         {account.mode === "local"
@@ -1599,7 +1618,7 @@ export default function App() {
                   : "Service indisponible"}
           </span>
           <span>
-            IMMO PILOT AI <b>0.9</b>
+            IMMO PILOT AI <b>0.10</b>
           </span>
         </footer>
       </div>
